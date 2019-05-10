@@ -12,6 +12,25 @@ function getStore() {
   return db.transaction([entriesTableName]).objectStore(entriesTableName);
 }
 
+function promiseAddEntry(entry) {
+  return new Promise((resolve, reject) => {
+    let transaction = db.transaction([entriesTableName], "readwrite");
+    let store = transaction.objectStore(entriesTableName);
+    let req = store.add(entry);
+    req.onsuccess = () => {
+      addLogEvent(`IndexedDB: Successfully added ${entry.name}`);
+    };
+
+    transaction.oncomplete = () => {
+      resolve();
+    };
+
+    transaction.onerror = () => {
+      reject();
+    };
+  });
+}
+
 function promiseGetEntryByName(name) {
   return new Promise((resolve, reject) => {
     let store = getStore();
@@ -59,7 +78,7 @@ function setStatus() {
 }
 
 function clearFilesList(elem) {
-  entries = {};
+  entries = [];
   clearChildren(elem);
 }
 
@@ -79,18 +98,40 @@ async function createFileTableEntry(handle) {
   let entry = {
     name: handle.name,
     handle: handle,
+    size: "N/A",
     type: handleType,
   };
+
+  if (handle.isFile) {
+    let file = await handle.getFile();
+    entry.size = file.size;
+    entry.type = `${entry.type}: ${file.type}`;
+  } else {
+    let subEntries = await handle.getEntries();
+    for await (const subHandle of subEntries) {
+      await createFileTableEntry(subHandle);
+    }
+  }
+  try {
+    let item = await promiseGetEntryByName(entry.name);
+    if (!item) {
+      await promiseAddEntry(entry);
+    }
+  } catch(e) {
+    addLogEvent(`IndexedDB feature failed: ${e}`);
+  }
   entries.push(entry);
   addLogEvent(`Processing Entry: ${entry.name}, is_a: ${entry.type}`);
 
   let rowElem = document.createElement("tr");
   let labelElem = document.createElement("td");
   let typeElem = document.createElement("td");
+  let sizeElem = document.createElement("td");
   let actionsElem = document.createElement("td");
 
   labelElem.innerText = entry.name;
   typeElem.innerText = entry.type;
+  sizeElem.innerText = entry.size;
 
   let buttonGroup = document.createElement("div");
   buttonGroup.classList.add("btn-group");
@@ -111,6 +152,7 @@ async function createFileTableEntry(handle) {
 
   rowElem.appendChild(labelElem);
   rowElem.appendChild(typeElem);
+  rowElem.appendChild(sizeElem);
   rowElem.appendChild(actionsElem);
   filesListElem.appendChild(rowElem);
 }
