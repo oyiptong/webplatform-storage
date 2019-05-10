@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Test: NativeFS API</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T">
+    <link rel="stylesheet" href="page.css">
+    <script src="page.js" async></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Native Filesystem</h1>
+      <table id="status-table">
+        <tr>
+          <td>NativeFS API</td>
+          <td id="status-nativefs" class="text-info status">Loading...</td>
+        </tr>
+        <tr>
+          <td>IndexedDB API</td>
+          <td id="status-indexeddb" class="text-info status">Loading...</td>
+        </tr>
+      </table>
+
+      <div class="row">
+        <div class="example-box">
+          <p>Select a directory</p>
+          <button id="directory-selector" class="btn btn-secondary">Select Directory</button>
+        </div><!-- example box -->
+        <div class="example-box">
+          <p>Select files</p>
+          <button id="file-selector" class="btn btn-secondary">Select File</button>
+        </div><!-- example box -->
+      </div><!-- row -->
+
+      <hr/>
+
+      <div class="row">
+        <div class="col-md-2">
+          <button id="files-list-clear" type="button" class="btn btn-secondary page-btn">Clear file list</button>
+        </div><!-- col -->
+        <div class="file-table col-md-10">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>File name</th>
+                <th>Type</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="files-list">
+            </tbody>
+          </table>
+        </div><!-- col/file-table -->
+      </div><!-- row -->
+
+      <hr/>
+
+      <div class="row">
+        <div class="col-md-2">
+          <button id="event-list-clear" type="button" class="btn btn-secondary page-btn">Clear event list</button>
+        </div><!-- col -->
+        <div class="col-md-10">
+          <ul id="event-list">
+          </ul>
+        </div><!-- col -->
+      </div><!-- row -->
+
+    </div> <!-- container -->
+  </body>
+</html>
