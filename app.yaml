@@ -3,15 +3,12 @@ service: chrome-storage
 
 instance_class: F1
 
-env_variables:
-  ENVIRONMENT: "production"
-
 handlers:
         - url: /
           static_files: static/index.html
           upload: static/index.html
-        - url: /(.*\.(css|js))$
+        - url: /(.*\.(css|js|html))$
           static_files: static/\1
-          upload: static/.*\.(css|js)$
+          upload: static/.*\.(css|js|html)$
         - url: /.*
           script: auto
