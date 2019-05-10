@@ -107,7 +107,19 @@ function addLogEvent(message) {
   }
 }
 
+function setStatus() {
+  let statusFElem = document.querySelector("#status-fileapi");
+  if (FileReader) {
+    statusFElem.innerText = "OK";
+    statusFElem.className = "text-success";
+  } else {
+    statusFElem.innerText = "API not available";
+    statusFElem.className = "text-danger";
+  }
+}
+
 window.addEventListener('load', async function() {
+  setStatus();
   eventListElem = document.querySelector("#event-list");
   progressSinkElem = document.querySelector("#progress-sink");
   fileInputElem = document.querySelector("#file-selector");

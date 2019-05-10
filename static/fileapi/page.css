@@ -7,6 +7,14 @@
   margin-left: 10px;
 }
 
+.status {
+  padding-left: 20px;
+}
+
+#status-table {
+  margin-bottom: 20px;
+}
+
 .page-btn {
   margin-bottom: 20px;
 }
