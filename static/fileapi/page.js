@@ -143,6 +143,7 @@ async function handleFileSelect(evt) {
 
       addLogEvent(divElem);
     } else {
+      createProgressEntry(file);
       addLogEvent(`No handler for ${file.name} of type ${file.type}`);
     }
   }
