@@ -27,3 +27,9 @@
   height: 500px;
   overflow: auto;
 }
+
+.img-preview {
+  max-height: 200px;
+  max-width: 500px;
+  display: block;
+}
