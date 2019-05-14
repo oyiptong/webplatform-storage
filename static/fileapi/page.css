@@ -29,7 +29,6 @@
 }
 
 .img-preview {
-  max-height: 200px;
-  max-width: 500px;
+  max-width: 100%;
   display: block;
 }
