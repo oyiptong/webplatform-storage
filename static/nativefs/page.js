@@ -229,7 +229,7 @@ function handleFileClick(entry) {
 
         let divElem = document.createElement("div");
         divElem.innerText = "Image file loaded. Preview:";
-        divElem.appendChild(imgElem);
+        divElem.append(imgElem);
 
         addResult(divElem);
       } else {
@@ -267,12 +267,12 @@ function addToListElem(payload, targetElem) {
   if (targetElem) {
     let item = document.createElement("li");
     if (payload instanceof HTMLElement) {
-      item.appendChild(payload);
+      item.append(payload);
     } else {
       // Most likely a string.
       item.innerHTML = payload;
     }
-    targetElem.appendChild(item);
+    targetElem.prepend(item);
   } else {
     console.log(`Could not find ${targetElem}`);
   }
