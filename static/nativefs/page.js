@@ -309,11 +309,11 @@ function emojiReaderForFile(file) {
       addLogEvent(`Success Reading ${f.name}, of type: ${f.type}`);
       let inStr = e.target.result;
       let matches = inStr.matchAll(emojiRegex);
-      let emojiCounts = new Map();
+      let emojiCounts = {};
       for (let m of matches) {
         emojiCounts[m[0]] = (emojiCounts[m[0]] || 0) + 1;
       }
-      if (emojiCounts.size) {
+      if (Object.keys(emojiCounts).length) {
         addResult(`For ${f.name}, Emoji detector found: ${JSON.stringify(emojiCounts)}`);
       } else {
         addResult(`No Emoji found for ${f.name} :-(`);
