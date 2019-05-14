@@ -4,7 +4,7 @@
     <title>Test: NativeFS API</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T">
     <link rel="stylesheet" href="page.css">
-    <script src="page.js" async></script>
+    <link href="/logo-folder.png" rel="icon">
   </head>
   <body>
     <div class="container">
@@ -21,14 +21,32 @@
       </table>
 
       <div class="row">
-        <div class="example-box">
+        <div class="example-box col-md-2">
           <p>Select a directory</p>
           <button id="directory-selector" class="btn btn-secondary">Select Directory</button>
         </div><!-- example box -->
-        <div class="example-box">
+        <div class="example-box col-md-2">
           <p>Select files</p>
           <button id="file-selector" class="btn btn-secondary">Select File</button>
         </div><!-- example box -->
+        <table id="handle-open-status" class="col-md-3 offset-md-5">
+          <thead>
+            <tr>
+              <th>Handle Type</th>
+              <th># Processed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Files</td>
+              <td id="file-handle-count">0</td>
+            </tr>
+            <tr>
+              <td>Directories</td>
+              <td id="directory-handle-count">0</td>
+            </tr>
+          </tbody>
+        </table>
       </div><!-- row -->
 
       <hr/>
@@ -57,6 +75,18 @@
 
       <div class="row">
         <div class="col-md-2">
+          <button id="results-list-clear" type="button" class="btn btn-secondary page-btn">Clear results list</button>
+        </div><!-- col -->
+        <div class="col-md-10">
+          <ul id="results-list">
+          </ul>
+        </div><!-- col -->
+      </div><!-- row -->
+
+      <hr/>
+
+      <div class="row">
+        <div class="col-md-2">
           <button id="event-list-clear" type="button" class="btn btn-secondary page-btn">Clear event list</button>
         </div><!-- col -->
         <div class="col-md-10">
@@ -66,5 +96,6 @@
       </div><!-- row -->
 
     </div> <!-- container -->
+    <script src="page.js" rel="module" async></script>
   </body>
 </html>
