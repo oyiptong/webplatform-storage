@@ -10,6 +10,8 @@ import('../components/editor.js');
 import('../components/app-404.js');
 import('../components/feature-status.js');
 import('../components/file-explorer.js');
+import('../components/file-viewer.js');
+import('../components/file-editor.js');
 
 class MainApp extends connect(store)(LitElement) {
   static get styles() {
@@ -59,9 +61,10 @@ class MainApp extends connect(store)(LitElement) {
       <h1>Native File System Demo</h1>
       <feature-status></feature-status>
       <main role="main" class="main-content">
-        <editor-app class="_page" ?active="${this._page === 'editor'}"></editor-app>
+        <file-viewer class="_page" ?active="${this._page === 'home'}"></file-viewer>
+        <file-editor class="_page" ?active="${this._page === 'home'}"></file-editor>
         <file-explorer class="_page" ?active="${this._page === 'home'}"></file-explorer>
-        <app-404 class="_page" ?active="${this._page === '404'}"></app-404>
+        <app-404 class="_page"></app-404>
       </main>
     `;
   }

@@ -4,7 +4,7 @@ export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
 export const CLOSE_HANDLE = 'CLOSE_HANDLE';
 export const REMOVE_ENTRY = 'REMOVE_ENTRY';
-export const WRITE_FILE = 'WRITE_FILE';
+export const ENTRY_CHANGED = 'ENTRY_CHANGED';
 export const CLOSE_ALL_HANDLES = 'CLOSE_ALL_HANDLES';
 
 export const openHandles = (handles) => {
@@ -74,12 +74,22 @@ export const removeEntry = (handle, name) => (dispatch) => {
   });
 };
 
-export const writeFile = (handle, data) => (dispatch) => {
-  dispatch({
-    type: WRITE_FILE,
-    handle,
-    data,
-  });
+export const writeFile = (entry, data) => (dispatch) => {
+  return async function(entry, data) {
+    let handle = entry.handle;
+    if (handle.isFile) {
+      let writer = await handle.createWriter();
+      await writer.truncate(0);
+      await writer.write(0, new Blob([data]));
+      entry.file = await handle.getFile();
+      entry.size = filesize(entry.file.size, {standard: "iec"});
+
+      dispatch({
+        type: ENTRY_CHANGED,
+        entry,
+      });
+    }
+  }(entry, data);
 };
 
 export const closeAllHandles = (dispatch) => {

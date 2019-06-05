@@ -1,7 +1,8 @@
-import { START_OPEN, OPEN_ENTRIES, CLOSE_HANDLE, CLOSE_ALL_HANDLES, REMOVE_ENTRY, WRITE_FILE } from '../actions/filesystem.js';
+import { START_OPEN, OPEN_ENTRIES, CLOSE_HANDLE, CLOSE_ALL_HANDLES, REMOVE_ENTRY, ENTRY_CHANGED } from '../actions/filesystem.js';
 const defaultState = {
   entries: [],
   handlesOpenAllowed: true,
+  entryChanged: null,
 };
 
 const filesystem = (state = defaultState, action) => {
@@ -26,6 +27,11 @@ const filesystem = (state = defaultState, action) => {
       ...state,
       handlesOpenAllowed: false,
       entries: [],
+    };
+  case ENTRY_CHANGED:
+    return {
+      ...state,
+      entryChanged: action.entry,
     };
   default:
     return state;

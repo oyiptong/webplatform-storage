@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
+import { openViewer, openEditor } from '../actions/files.js';
 
 class FileList extends connect(store)(LitElement) {
   static get styles() {
@@ -9,6 +10,10 @@ class FileList extends connect(store)(LitElement) {
       table {
         width: 100%;
         font-size: 1em;
+      }
+      td[directory] {
+        font-weight: bold;
+        color: #729FCF;
       }
       `
     ];
@@ -23,6 +28,27 @@ class FileList extends connect(store)(LitElement) {
   constructor() {
     super();
     this.entries = [];
+    this.editables = new Set(["application/json", "text/plain"]);
+  }
+
+  isPreviewable(type) {
+    return type.startsWith("image/") && type != "image/svg+xml";
+  }
+
+  isEditable(type) {
+    return this.editables.has(type);
+  }
+
+  triggerView(entry) {
+    return (e) => {
+      store.dispatch(openViewer(entry));
+    };
+  }
+
+  triggerEdit(entry) {
+    return (e) => {
+      store.dispatch(openEditor(entry));
+    };
   }
 
   stateChanged(state) {
@@ -50,12 +76,19 @@ class FileList extends connect(store)(LitElement) {
         </thead>
         <tbody>
           ${this.entries.map(entry => {
+            let actions = [];
+            if (this.isPreviewable(entry.type)) {
+              actions.push(html`<button @click="${this.triggerView(entry)}">View</button>`);
+            }
+            if (this.isEditable(entry.type)) {
+              actions.push(html`<button @click="${this.triggerEdit(entry)}">Edit</button>`);
+            }
             return html`
             <tr>
-              <td>${entry.name}</td>
+              <td ?directory="${!entry.file}">${entry.name}</td>
               <td>${entry.size}</td>
               <td>${entry.type}</td>
-              <td>ACTIONS</td>
+              <td>${actions}</td>
             </tr>
             `;
           })}
