@@ -28,7 +28,6 @@ function verifyPlatformCapabilities(featureList) {
       break;
     }
   }
-  console.log(`capabilities: ${JSON.stringify(capabilities)}`);
   return capabilities;
 }
 

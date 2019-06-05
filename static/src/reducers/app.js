@@ -8,7 +8,6 @@ const defaultState = {
 const app = (state = defaultState, action) => {
   switch(action.type) {
   case UPDATE_PAGE:
-    console.log("update page action: " + action.page);
     return {
       ...state,
       page: action.page,

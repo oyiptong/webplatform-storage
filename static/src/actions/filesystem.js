@@ -1,4 +1,4 @@
-import { filesize } from 'filesize/lib/filesize';
+import * as filesize from 'filesize';
 
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
 export const CLOSE_HANDLE = 'CLOSE_HANDLE';
@@ -28,20 +28,22 @@ async function asyncEntriesFromHandle(handle, entries) {
   let entry = {
     handle,
     file: null,
-    mimetype: null,
+    type: "directory",
     size: null,
   };
   if (handle.isFile) {
     let file = await handle.getFile();
     entry.file = file;
-    entry.mimetype = file.type || "unknown";
-    //entry.size = filesize(file.size, {standard: "iec"});
-    entry.size = file.size;
+    entry.type = file.type || "unknown";
+    entry.size = filesize(file.size, {standard: "iec"});
   } else {
     let subHandles = await handle.getEntries();
+    let itemCount = 0;
     for await (const subHandle of subHandles) {
+      itemCount++;
       await asyncEntriesFromHandle(subHandle, entries);
     }
+    entry.size = `${itemCount} items`;
   }
   entry.name = handle.isFile ? handle.name : handle.name + "/";
 

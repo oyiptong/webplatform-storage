@@ -43,8 +43,8 @@ class FileList extends connect(store)(LitElement) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Type</th>
             <th>Size</th>
+            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -53,8 +53,8 @@ class FileList extends connect(store)(LitElement) {
             return html`
             <tr>
               <td>${entry.name}</td>
-              <td>${entry.mimetype}</td>
               <td>${entry.size}</td>
+              <td>${entry.type}</td>
               <td>ACTIONS</td>
             </tr>
             `;

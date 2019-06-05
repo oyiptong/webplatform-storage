@@ -37,7 +37,6 @@ class MainApp extends connect(store)(LitElement) {
     installRouter((location) => {
       store.dispatch(navigate(location));
     });
-    console.log("check capabilities");
     store.dispatch(checkCapabilities(this.featureWantList));
   }
 
@@ -58,11 +57,6 @@ class MainApp extends connect(store)(LitElement) {
 
     return html`
       <h1>Native File System Demo</h1>
-      <nav>
-        <a ?selected="${this._page === 'home'}" href="/">Home</a>
-        <a ?selected="${this._page === 'editor'}" href="#/editor">Editor</a>
-        <a ?selected="${this._page === 'explore'}" href="#/explore">Explore</a>
-      </nav>
       <feature-status></feature-status>
       <main role="main" class="main-content">
         <editor-app class="_page" ?active="${this._page === 'editor'}"></editor-app>

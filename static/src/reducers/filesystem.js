@@ -1,4 +1,4 @@
-import { OPEN_ENTRIES, CLOSE_HANDLE, REMOVE_ENTRY, WRITE_FILE } from '../actions/filesystem.js';
+import { OPEN_ENTRIES, CLOSE_HANDLE, CLOSE_ALL_HANDLES, REMOVE_ENTRY, WRITE_FILE } from '../actions/filesystem.js';
 const defaultState = {
   entries: [],
 };
@@ -10,6 +10,11 @@ const filesystem = (state = defaultState, action) => {
     return {
       ...state,
       entries,
+    };
+  case CLOSE_ALL_HANDLES:
+    return {
+      ...state,
+      entries: [],
     };
   default:
     return state;
