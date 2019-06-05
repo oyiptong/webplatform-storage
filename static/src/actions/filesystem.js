@@ -1,5 +1,6 @@
 import * as filesize from 'filesize';
 
+export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
 export const CLOSE_HANDLE = 'CLOSE_HANDLE';
 export const REMOVE_ENTRY = 'REMOVE_ENTRY';
@@ -7,29 +8,30 @@ export const WRITE_FILE = 'WRITE_FILE';
 export const CLOSE_ALL_HANDLES = 'CLOSE_ALL_HANDLES';
 
 export const openHandles = (handles) => {
-  return async function(dispatch) {
-    let entries = await asyncProcessHandles(handles);
+  return async function(dispatch, getState) {
     dispatch({
-      type: OPEN_ENTRIES,
-      entries,
+      type: START_OPEN,
     });
+    await asyncProcessHandles(handles, dispatch, getState);
   };
 };
 
-async function asyncProcessHandles(handles) {
-  let entries = [];
+async function asyncProcessHandles(handles, dispatch, getState) {
   for (const handle of handles) {
-    await asyncEntriesFromHandle(handle, entries);
+    await asyncEntriesFromHandle(handle, dispatch, getState);
   }
-  return entries;
 }
 
-async function asyncEntriesFromHandle(handle, entries) {
+async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null) {
+  if (!getState().filesystem.handlesOpenAllowed) {
+    return;
+  }
   let entry = {
     handle,
     file: null,
     type: "directory",
     size: null,
+    parent,
   };
   if (handle.isFile) {
     let file = await handle.getFile();
@@ -41,13 +43,16 @@ async function asyncEntriesFromHandle(handle, entries) {
     let itemCount = 0;
     for await (const subHandle of subHandles) {
       itemCount++;
-      await asyncEntriesFromHandle(subHandle, entries);
+      await asyncEntriesFromHandle(subHandle, dispatch, getState, handle);
     }
     entry.size = `${itemCount} items`;
   }
   entry.name = handle.isFile ? handle.name : handle.name + "/";
 
-  entries.push(entry);
+  dispatch({
+    type: OPEN_ENTRIES,
+    entries: [entry],
+  });
 }
 
 export const closeHandle = (handle) => (dispatch) => {
