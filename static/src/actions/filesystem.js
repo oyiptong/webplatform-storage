@@ -22,16 +22,18 @@ async function asyncProcessHandles(handles, dispatch, getState) {
   }
 }
 
-async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null) {
+async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null, level = 0) {
   if (!getState().filesystem.handlesOpenAllowed) {
     return;
   }
+  let subHandles = [];
   let entry = {
     handle,
     file: null,
     type: "directory",
     size: null,
     parent,
+    level,
   };
   if (handle.isFile) {
     let file = await handle.getFile();
@@ -39,11 +41,11 @@ async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null)
     entry.type = file.type || "unknown";
     entry.size = filesize(file.size, {standard: "iec"});
   } else {
-    let subHandles = await handle.getEntries();
+    let subHandlesIter = await handle.getEntries();
     let itemCount = 0;
-    for await (const subHandle of subHandles) {
+    for await (const subHandle of subHandlesIter) {
       itemCount++;
-      await asyncEntriesFromHandle(subHandle, dispatch, getState, handle);
+      subHandles.push(subHandle);
     }
     entry.size = `${itemCount} items`;
   }
@@ -53,6 +55,8 @@ async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null)
     type: OPEN_ENTRIES,
     entries: [entry],
   });
+  await Promise.all(
+      subHandles.map((subHandle) => asyncEntriesFromHandle(subHandle, dispatch, getState, handle, level+1)));
 }
 
 export const closeHandle = (handle) => (dispatch) => {
