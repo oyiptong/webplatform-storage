@@ -1,8 +1,9 @@
 import { START_OPEN, OPEN_ENTRIES, CLOSE_HANDLE, CLOSE_ALL_HANDLES, REMOVE_ENTRY, ENTRY_CHANGED } from '../actions/filesystem.js';
+
 const defaultState = {
   entries: [],
+  lastChange: null,
   handlesOpenAllowed: true,
-  entryChanged: null,
 };
 
 const filesystem = (state = defaultState, action) => {
@@ -16,9 +17,11 @@ const filesystem = (state = defaultState, action) => {
     let newState = state;
     if (state.handlesOpenAllowed) {
       let entries = state.entries.concat(action.entries);
+
       newState = {
         ...state,
         entries,
+        lastChange: Math.floor(Date.now() / 1000),
       };
     }
     return newState;
@@ -31,7 +34,7 @@ const filesystem = (state = defaultState, action) => {
   case ENTRY_CHANGED:
     return {
       ...state,
-      entryChanged: action.entry,
+      lastChange: Math.floor(Date.now() / 1000),
     };
   default:
     return state;

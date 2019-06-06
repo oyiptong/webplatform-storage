@@ -5,11 +5,6 @@ import { store } from '../store.js';
 
 class App404 extends connect(store)(LitElement) {
   render() {
-    updateMetadata({
-      title: `404 - Page Not Found`,
-      description: 'Page Not Found',
-    });
-
     return html`
       <section>
         <h2>Oops! You hit a 404</h2>

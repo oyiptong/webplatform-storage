@@ -50,7 +50,6 @@ class FileEditor extends connect(store)(LitElement) {
   static get properties() {
     return {
       entry: { type: Object },
-      fileData: { type: String },
     };
   }
 
@@ -66,32 +65,35 @@ class FileEditor extends connect(store)(LitElement) {
     store.dispatch(writeFile(this.entry, this.changeBuffer));
   }
 
-  stateChanged(state) {
-    this.entry = state.files.editorEntry;
-
-    if (!this.entry) {
-      this.fileData = null;
-      return;
+  async performUpdate() {
+    if (this.entry) {
+      let file = this.entry.file;
+      this.fileData = await new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+          resolve(e.target.result);
+        };
+        reader.readAsText(file);
+      });
     }
 
-    let file = this.entry.file;
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      this.fileData = e.target.result;
-    };
-    reader.readAsText(file);
+    super.performUpdate();
+  }
+
+  stateChanged(state) {
+    this.entry = state.files.editorEntry;
   }
 
   constructor() {
     super();
     this.entry = null;
-    this.fileData = null;
+    this.fileData = "";
     this.changeBuffer = null;
   }
 
   render() {
     return html`
-      <section ?active="${this.entry}">
+      <section ?active="${!!this.entry}">
         <div class="contents">
           <nav>
             <button @click="${this.saveFile}">Save</button>

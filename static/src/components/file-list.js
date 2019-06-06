@@ -22,12 +22,14 @@ class FileList extends connect(store)(LitElement) {
   static get properties() {
     return {
       entries: Array,
+      lastChange: Number,
     };
   }
 
   constructor() {
     super();
     this.entries = [];
+    this.lastChange = null;
     this.editables = new Set(["application/json", "text/plain"]);
   }
 
@@ -52,10 +54,8 @@ class FileList extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    if (!state.filesystem.entries) {
-      return;
-    }
     this.entries = state.filesystem.entries;
+    this.lastChange = state.filesystem.lastChange;
   }
 
   render() {

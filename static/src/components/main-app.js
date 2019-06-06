@@ -5,8 +5,6 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { navigate } from '../actions/app.js';
 import { checkCapabilities } from '../actions/features.js';
-import './app-home.js';
-import('../components/editor.js');
 import('../components/app-404.js');
 import('../components/feature-status.js');
 import('../components/file-explorer.js');
@@ -52,11 +50,6 @@ class MainApp extends connect(store)(LitElement) {
   }
 
   render() {
-    updateMetadata({
-      title: `Home`,
-      description: 'Suite of stuff'
-    });
-
     return html`
       <h1>Native File System Demo</h1>
       <feature-status></feature-status>
