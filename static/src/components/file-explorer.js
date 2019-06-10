@@ -53,10 +53,13 @@ class FileExplorer extends connect(store)(LitElement) {
 
   openFilepicker(options) {
     return async function(e) {
-      let handles = await window.chooseFileSystemEntries(options);
-      store.dispatch(openHandles(handles));
+      try {
+        let handles = await window.chooseFileSystemEntries(options);
+        store.dispatch(openHandles(handles));
+      } catch(e) {
+        console.log(e);
+      }
     };
-
   }
 
   closeAllHandles(e) {

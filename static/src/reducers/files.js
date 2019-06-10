@@ -20,11 +20,13 @@ const files = (state = defaultState, action) => {
     return {
       ...state,
       editorEntry: action.entry,
+      editorFileData: action.fileData,
     };
     case CLOSE_EDITOR:
     return {
       ...state,
       editorEntry: null,
+      editorFileData: null,
     };
     default:
       return state;

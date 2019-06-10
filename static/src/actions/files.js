@@ -17,10 +17,28 @@ export const closeViewer = (dispatch) => {
 };
 
 export const openEditor = (entry) => (dispatch) => {
-  dispatch({
-    type: OPEN_EDITOR,
-    entry,
-  });
+  return async function(entry, dispatch) {
+    let file = entry.file;
+    let fileData = await new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(e.target.result);
+      };
+      reader.onabort = (e) => {
+        resolve("");
+      };
+      reader.onerror = (e) => {
+        reject(e);
+      };
+      reader.readAsText(file);
+    });
+
+    dispatch({
+      type: OPEN_EDITOR,
+      entry,
+      fileData,
+    });
+  }(entry, dispatch);
 };
 
 export const closeEditor = (dispatch) => {

@@ -37,12 +37,6 @@ class FileEditor extends connect(store)(LitElement) {
         width: 80%;
         z-index: 4;
       }
-      pre {
-        border: 1px solid #888;
-        overflow: auto;
-        width: 100%;
-        height: 100%;
-      }
       `
     ];
   }
@@ -50,6 +44,8 @@ class FileEditor extends connect(store)(LitElement) {
   static get properties() {
     return {
       entry: { type: Object },
+      fileData: { type: String },
+      editAreaHeight: { type: String },
     };
   }
 
@@ -58,48 +54,58 @@ class FileEditor extends connect(store)(LitElement) {
   }
 
   captureChange(e) {
-    this.changeBuffer = e.target.innerText;
+    this.changeBuffer = e.target.value;
+    this.editAreaHeight = e.target.scrollHeight + 'px';
   }
 
   saveFile() {
     store.dispatch(writeFile(this.entry, this.changeBuffer));
   }
 
-  async performUpdate() {
-    if (this.entry) {
-      let file = this.entry.file;
-      this.fileData = await new Promise((resolve, reject) => {
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target.result);
-        };
-        reader.readAsText(file);
-      });
-    }
-
-    super.performUpdate();
-  }
-
   stateChanged(state) {
     this.entry = state.files.editorEntry;
+    this.fileData = state.files.editorFileData;
   }
 
   constructor() {
     super();
     this.entry = null;
-    this.fileData = "";
+    this.fileData = null;
     this.changeBuffer = null;
+    this.editAreaHeight = "auto";
+  }
+
+  updated() {
+    // Auto-resizing for textarea.
+    let textarea = this.shadowRoot.querySelector('textarea');
+    let expectedHeight = textarea.scrollHeight + "px";
+    textarea.style.height = expectedHeight;
   }
 
   render() {
     return html`
+      <style>
+        textarea {
+          width: 100%;
+          padding: 0;
+          margin: 15px auto;
+          border: 1px solid #333;
+          font-family: Courier, Monaco, monospace;
+          whitespace: pre;
+          overflow-wrap: break-word;
+          overflow: hidden;
+          resize: none;
+          height: auto;
+          height: ${this.editAreaHeight};
+        }
+      </style>
       <section ?active="${!!this.entry}">
         <div class="contents">
           <nav>
             <button @click="${this.saveFile}">Save</button>
             <button @click="${this.closeEditor}">Close Editor</button>
           </nav>
-          <pre contenteditable="true" @input="${this.captureChange}">${this.fileData}</pre>
+          <textarea wrap="off" rows="1" @input="${this.captureChange}" .value="${this.fileData}"></textarea>
         </div>
       </section>
     `;
