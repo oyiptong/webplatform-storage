@@ -1,0 +1,12 @@
+{
+  "manifest_version": 1,
+  "description": "Native FS Demo",
+  "short_name": "native_fs_demo",
+  "icons": [
+    {
+      "src": "/logo-folder.png",
+      "sizes": "100x100",
+      "type": "image/png"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DEFAULT_PORT  = 8080
+	DEFAULT_PORT = 8080
 )
 
 type serverConfig struct {
@@ -49,11 +49,14 @@ func main() {
 	r := mux.NewRouter()
 
 	if config.Env == "dev" {
-		staticFS := http.FileServer(http.Dir("./static"))
+		staticFS := http.FileServer(http.Dir("./static/dist"))
 		r.PathPrefix("/").Handler(http.StripPrefix("/", staticFS))
 	}
 
 	log.Println("Listening...")
+	if config.Env == "dev" {
+		log.Printf("Dev Server: http://127.0.0.1:%d\n", config.Port)
+	}
 	log.Fatal(http.ListenAndServe(
 		fmt.Sprintf(":%d", config.Port),
 		handlers.LoggingHandler(os.Stdout, r),
