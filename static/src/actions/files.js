@@ -4,10 +4,16 @@ export const OPEN_EDITOR = 'OPEN_EDITOR';
 export const CLOSE_EDITOR = 'CLOSE_EDITOR';
 
 export const openViewer = (entry) => (dispatch) => {
-  dispatch({
-    type: OPEN_VIEWER,
-    entry,
-  });
+  return async function(entry, dispatch) {
+    // File may have changed.
+    entry.file = await entry.handle.getFile();
+    let objectURL = URL.createObjectURL(entry.file);
+    dispatch({
+      type: OPEN_VIEWER,
+      entry,
+      objectURL,
+    });
+  }(entry, dispatch);
 };
 
 export const closeViewer = (dispatch) => {
@@ -18,7 +24,8 @@ export const closeViewer = (dispatch) => {
 
 export const openEditor = (entry) => (dispatch) => {
   return async function(entry, dispatch) {
-    let file = entry.file;
+    // File may have changed.
+    entry.file = await entry.handle.getFile();
     let fileData = await new Promise((resolve, reject) => {
       let reader = new FileReader();
       reader.onload = (e) => {
@@ -30,7 +37,7 @@ export const openEditor = (entry) => (dispatch) => {
       reader.onerror = (e) => {
         reject(e);
       };
-      reader.readAsText(file);
+      reader.readAsText(entry.file);
     });
 
     dispatch({

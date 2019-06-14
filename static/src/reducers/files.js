@@ -10,6 +10,7 @@ const files = (state = defaultState, action) => {
       return {
         ...state,
         viewerEntry: action.entry,
+        viewerObjectURL: action.objectURL,
       };
     case CLOSE_VIEWER:
       return {

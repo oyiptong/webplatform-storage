@@ -57,9 +57,8 @@ class FileViewer extends connect(store)(LitElement) {
     this.entry = state.files.viewerEntry;
 
     if (this.entry) {
-      let file = this.entry.file;
-      if (file.type.startsWith("image/")) {
-        this.imageDataURL = URL.createObjectURL(file);
+      if (this.entry.type.startsWith("image/")) {
+        this.imageDataURL = state.files.viewerObjectURL;
       }
     } else {
       this.imageDataURL = null;
