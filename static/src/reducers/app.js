@@ -1,8 +1,9 @@
-import { UPDATE_PAGE } from '../actions/app.js';
+import { UPDATE_PAGE, TOGGLE_DEBUG_MODE } from '../actions/app.js';
 
 const defaultState = {
   page: 'home',
   featuresEnabled: new Set(['nativefs']),
+  debug: false,
 };
 
 const app = (state = defaultState, action) => {
@@ -11,6 +12,12 @@ const app = (state = defaultState, action) => {
     return {
       ...state,
       page: action.page,
+    };
+  case TOGGLE_DEBUG_MODE:
+    let debug = !state.debug;
+    return {
+      ...state,
+      debug,
     };
   default:
     return state;

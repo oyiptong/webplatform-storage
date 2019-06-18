@@ -23,21 +23,37 @@ class FileList extends connect(store)(LitElement) {
     return {
       entries: Array,
       lastChange: Number,
+      debug: Boolean,
     };
   }
 
   constructor() {
     super();
+    this.debug = false;
     this.entries = [];
     this.lastChange = null;
     this.editables = new Set(["application/json", "text/plain"]);
   }
 
   isPreviewable(type) {
+    if (type === "directory") {
+      return false;
+    }
+
+    if (this.debug) {
+      return true;
+    }
     return type.startsWith("image/") && type != "image/svg+xml";
   }
 
   isEditable(type) {
+    if (type === "directory") {
+      return false;
+    }
+
+    if (this.debug) {
+      return true;
+    }
     return this.editables.has(type);
   }
 
@@ -56,6 +72,7 @@ class FileList extends connect(store)(LitElement) {
   stateChanged(state) {
     this.entries = state.filesystem.entries;
     this.lastChange = state.filesystem.lastChange;
+    this.debug = state.app.debug;
   }
 
   render() {

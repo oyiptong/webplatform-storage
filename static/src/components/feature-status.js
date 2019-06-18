@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
+import { toggleDebug } from '../actions/app.js';
 
 class FeatureStatus extends connect(store)(LitElement) {
   static get styles() {
@@ -31,6 +32,17 @@ class FeatureStatus extends connect(store)(LitElement) {
       .text-danger {
         color: red;
       }
+      button.debug-btn {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+      }
+      button.debug-btn:hover {
+        text-decoration: underline;
+      }
      `
     ];
   }
@@ -39,6 +51,7 @@ class FeatureStatus extends connect(store)(LitElement) {
     return {
       capabilities: Object,
       wantList: Array,
+      debug: Boolean,
     };
   }
 
@@ -59,12 +72,18 @@ class FeatureStatus extends connect(store)(LitElement) {
       }
     };
     this.wantList = ['nativefs', 'indexeddb'];
+    this.debug = false;
+  }
+
+  triggerDebug() {
+    store.dispatch(toggleDebug);
   }
 
   stateChanged(state) {
     if (!state.features) {
       return;
     }
+    this.debug = state.app.debug;
     let enabled = state.app.featuresEnabled;
     for (let want of this.wantList) {
       let available = !!state.features[want];
@@ -74,8 +93,20 @@ class FeatureStatus extends connect(store)(LitElement) {
   }
 
   render() {
+    let debugStatus = "";
+    let debugText = "OFF";
+    if (this.debug) {
+      debugStatus = "text-danger";
+      debugText = "ON";
+    }
     return html`
     <table class="feature-status-table">
+      <tr>
+        <td class="label">
+          <button class="debug-btn" @click="${this.triggerDebug}">Debug Mode</button>
+        </td>
+        <td class="status-text ${debugStatus}">${debugText}</td>
+      </tr>
     ${this.wantList.map(want => {
       let feature = this.capabilities[want];
       let statusClass = "text-danger";

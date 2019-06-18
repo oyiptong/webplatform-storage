@@ -7,6 +7,48 @@ export const REMOVE_ENTRY = 'REMOVE_ENTRY';
 export const ENTRY_CHANGED = 'ENTRY_CHANGED';
 export const CLOSE_ALL_HANDLES = 'CLOSE_ALL_HANDLES';
 
+const fileExtensionRE = /(?:\.([^.]+))?$/;
+const textExtensions = new Set([
+  "sql",
+  "csv",
+  "tsv",
+  "go",
+  "mod",
+  "sum",
+  "rs",
+  "h",
+  "cpp",
+  "c",
+  "cc",
+  "py",
+  "rb",
+  "pl",
+  "md",
+  "nfo",
+  "yaml",
+  "yml",
+  "toml",
+  "jinja",
+  "coffee",
+  "js",
+  "ts",
+  "jsx",
+  "tsx",
+  "sh",
+  "css",
+  "scss",
+  "less",
+  "haml",
+  "lock",
+  "gitignore",
+  "zshrc",
+  "bashrc",
+  "profile",
+  "rst",
+  "r",
+  "log",
+]);
+
 export const openHandles = (handles) => {
   return async function(dispatch, getState) {
     dispatch({
@@ -38,7 +80,7 @@ async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null,
   if (handle.isFile) {
     let file = await handle.getFile();
     entry.file = file;
-    entry.type = file.type || "unknown";
+    entry.type = deduceType(file);
     entry.size = filesize(file.size, {standard: "iec"});
   } else {
     let subHandlesIter = await handle.getEntries();
@@ -57,6 +99,22 @@ async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null,
   });
   await Promise.all(
       subHandles.map((subHandle) => asyncEntriesFromHandle(subHandle, dispatch, getState, handle, level+1)));
+}
+
+function deduceType(file) {
+  if (file.type) {
+    return file.type;
+  }
+  let nameSplit = fileExtensionRE.exec(file.name.toLowerCase());
+
+  let ext = nameSplit[1];
+  if (ext) {
+    if (textExtensions.has(ext)) {
+      return "text/plain";
+    }
+  }
+
+  return "unknown";
 }
 
 export const closeHandle = (handle) => (dispatch) => {

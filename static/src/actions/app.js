@@ -1,4 +1,9 @@
 export const UPDATE_PAGE = 'UPDATE_PAGE';
+export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
+
+export const toggleDebug = (dispatch) => {
+  dispatch({type: TOGGLE_DEBUG_MODE});
+};
 
 export const navigate = (location) => (dispatch) => {
   // Extract the page name from path.
