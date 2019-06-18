@@ -32,7 +32,10 @@ class FileList extends connect(store)(LitElement) {
     this.debug = false;
     this.entries = [];
     this.lastChange = null;
-    this.editables = new Set(["application/json", "text/plain"]);
+    this.editables = new Set([
+      "application/json",
+      "application/x-sh",
+    ]);
   }
 
   isPreviewable(type) {
@@ -52,6 +55,10 @@ class FileList extends connect(store)(LitElement) {
     }
 
     if (this.debug) {
+      return true;
+    }
+
+    if (type.startsWith("text/")) {
       return true;
     }
     return this.editables.has(type);

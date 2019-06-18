@@ -10,6 +10,7 @@ export const CLOSE_ALL_HANDLES = 'CLOSE_ALL_HANDLES';
 const fileExtensionRE = /(?:\.([^.]+))?$/;
 const textExtensions = new Set([
   "sql",
+  "cfg",
   "csv",
   "tsv",
   "go",
