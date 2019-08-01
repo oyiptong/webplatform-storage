@@ -148,6 +148,9 @@ export const writeFile = (entry, data) => (dispatch) => {
       let writer = await handle.createWriter();
       await writer.truncate(0);
       await writer.write(0, new Blob([data]));
+      if (writer.close) {
+        await writer.close();
+      }
       entry.file = await handle.getFile();
       entry.size = filesize(entry.file.size, {standard: "iec"});
 
