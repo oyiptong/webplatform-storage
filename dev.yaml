@@ -1,5 +1,5 @@
 runtime: go112
-service: chrome-storage
+service: chrome-storage-dev
 
 instance_class: F1
 
