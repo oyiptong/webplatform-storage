@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { closeEditor } from '../actions/files.js';
-import { writeFile } from '../actions/filesystem.js';
+import { writeFile, saveAs } from '../actions/filesystem.js';
 
 class FileEditor extends connect(store)(LitElement) {
   static get styles() {
@@ -59,17 +59,31 @@ class FileEditor extends connect(store)(LitElement) {
   }
 
   saveFile() {
+    if (!this.changeBuffer) {
+      this.changeBuffer = this.fileData;
+    }
     store.dispatch(writeFile(this.entry, this.changeBuffer));
+  }
+
+  saveAs() {
+    if (!this.changeBuffer) {
+      this.changeBuffer = this.fileData;
+    }
+    store.dispatch(saveAs(this.changeBuffer));
   }
 
   stateChanged(state) {
     this.entry = state.files.editorEntry;
+    if (this.entry) {
+      this.fileName = this.entry.handle.name;
+    }
     this.fileData = state.files.editorFileData;
   }
 
   constructor() {
     super();
     this.entry = null;
+    this.fileName = "Untitled";
     this.fileData = null;
     this.changeBuffer = null;
     this.editAreaHeight = "auto";
@@ -98,11 +112,16 @@ class FileEditor extends connect(store)(LitElement) {
           height: auto;
           height: ${this.editAreaHeight};
         }
+        h2 {
+          margin: 0;
+        }
       </style>
       <section ?active="${!!this.entry}">
         <div class="contents">
+          <h2>${this.fileName}</h2>
           <nav>
             <button @click="${this.saveFile}">Save</button>
+            <button @click="${this.saveAs}">Save As</button>
             <button @click="${this.closeEditor}">Close Editor</button>
           </nav>
           <textarea wrap="off" rows="1" @input="${this.captureChange}" .value="${this.fileData}"></textarea>

@@ -1,4 +1,5 @@
 import * as filesize from 'filesize';
+import { openEditor } from '../actions/files.js';
 
 export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
@@ -143,17 +144,8 @@ export const removeEntry = (handle, name) => (dispatch) => {
 
 export const writeFile = (entry, data) => (dispatch) => {
   return async function(entry, data) {
-    let handle = entry.handle;
-    if (handle.isFile) {
-      let writer = await handle.createWriter();
-      await writer.truncate(0);
-      await writer.write(0, new Blob([data]));
-      if (writer.close) {
-        await writer.close();
-      }
-      entry.file = await handle.getFile();
-      entry.size = filesize(entry.file.size, {standard: "iec"});
-
+    entry = await writeDataToFile(entry, data);
+    if(entry) {
       dispatch({
         type: ENTRY_CHANGED,
         entry,
@@ -161,6 +153,34 @@ export const writeFile = (entry, data) => (dispatch) => {
     }
   }(entry, data);
 };
+
+export const saveAs = (data) => (dispatch, getState) => {
+  return async function(data) {
+    let handle = await window.chooseFileSystemEntries({type: "saveFile"});
+    await openHandles([handle])(dispatch, getState);
+
+    let entry = {handle};
+    entry = await writeDataToFile(entry, data);
+    return openEditor(entry)(dispatch);
+  }(data);
+};
+
+async function writeDataToFile(entry, data) {
+  let handle = entry.handle;
+  if (handle.isFile) {
+    let writer = await handle.createWriter();
+    await writer.truncate(0);
+    await writer.write(0, new Blob([data]));
+    if (writer.close) {
+      await writer.close();
+    }
+    entry.file = await handle.getFile();
+    entry.size = filesize(entry.file.size, {standard: "iec"});
+
+    return entry;
+  }
+  return null;
+}
 
 export const closeAllHandles = (dispatch) => {
   dispatch({
