@@ -37,6 +37,10 @@ class FileEditor extends connect(store)(LitElement) {
         width: 80%;
         z-index: 4;
       }
+
+      button[hidden] {
+        display: none;
+      }
       `
     ];
   }
@@ -75,9 +79,16 @@ class FileEditor extends connect(store)(LitElement) {
   stateChanged(state) {
     this.entry = state.files.editorEntry;
     if (this.entry) {
+      if (this.entry.isEmpty) {
+        this.isEmpty = true;
+        this.fileData = "";
+        return;
+      }
+
+      this.isEmpty = false;
       this.fileName = this.entry.handle.name;
+      this.fileData = state.files.editorFileData;
     }
-    this.fileData = state.files.editorFileData;
   }
 
   constructor() {
@@ -87,6 +98,7 @@ class FileEditor extends connect(store)(LitElement) {
     this.fileData = null;
     this.changeBuffer = null;
     this.editAreaHeight = "auto";
+    this.isEmpty = false;
   }
 
   updated() {
@@ -120,7 +132,7 @@ class FileEditor extends connect(store)(LitElement) {
         <div class="contents">
           <h2>${this.fileName}</h2>
           <nav>
-            <button @click="${this.saveFile}">Save</button>
+            <button ?hidden="${this.isEmpty}" @click="${this.saveFile}">Save</button>
             <button @click="${this.saveAs}">Save As</button>
             <button @click="${this.closeEditor}">Close Editor</button>
           </nav>

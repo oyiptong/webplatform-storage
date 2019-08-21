@@ -24,21 +24,25 @@ export const closeViewer = (dispatch) => {
 
 export const openEditor = (entry) => (dispatch) => {
   return async function(entry, dispatch) {
-    // File may have changed.
-    entry.file = await entry.handle.getFile();
-    let fileData = await new Promise((resolve, reject) => {
-      let reader = new FileReader();
-      reader.onload = (e) => {
-        resolve(e.target.result);
-      };
-      reader.onabort = (e) => {
-        resolve("");
-      };
-      reader.onerror = (e) => {
-        reject(e);
-      };
-      reader.readAsText(entry.file);
-    });
+    let fileData;
+
+    if (entry && !entry.isEmpty) {
+      // File may have changed.
+      entry.file = await entry.handle.getFile();
+      fileData = await new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+          resolve(e.target.result);
+        };
+        reader.onabort = (e) => {
+          resolve("");
+        };
+        reader.onerror = (e) => {
+          reject(e);
+        };
+        reader.readAsText(entry.file);
+      });
+    }
 
     dispatch({
       type: OPEN_EDITOR,

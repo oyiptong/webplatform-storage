@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
+import { openEditor } from '../actions/files.js';
 import { openHandles, closeAllHandles } from '../actions/filesystem.js';
 import('../components/file-list.js');
 
@@ -37,6 +38,10 @@ class FileExplorer extends connect(store)(LitElement) {
         background-color: #6200EE;
         color: white;
       }
+      button.new-file {
+        background-color: #03DAC5;
+        color: white;
+      }
       button.files {
         background-color: #3700B3;
         color: white;
@@ -60,6 +65,10 @@ class FileExplorer extends connect(store)(LitElement) {
         console.log(e);
       }
     };
+  }
+
+  newFile() {
+    store.dispatch(openEditor({isEmpty: true}));
   }
 
   closeAllHandles(e) {
@@ -86,6 +95,7 @@ class FileExplorer extends connect(store)(LitElement) {
   render() {
     return html`
       <div class="row">
+          <button @click="${this.newFile}" class="new-file">New File</button>
           <button @click="${this.openFilepicker({type: "openDirectory", multiple: true})}" class="directory">Open Directory</button>
           <button @click="${this.openFilepicker({type: "openFile", multiple: true})}" class="files">Open Files</button>
           <button @click="${this.closeAllHandles}" ?hidden="${!this.showCloseButton}" class="close-all">Close All Files</button>
