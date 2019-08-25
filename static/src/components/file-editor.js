@@ -29,17 +29,34 @@ class FileEditor extends connect(store)(LitElement) {
 
       .contents {
         background-color: #FEFEFE;
-        margin: 20px auto;
-        top: 5%;
-        bottom: 5%;
-        padding: 20px;
-        border: 1px solid #888;
+        margin: 0 auto;
+        top: 0;
+        bottom: 0;
+        padding: 0 20px;
+        border: 0;
+        position: relative;
         width: 80%;
         z-index: 4;
       }
 
       button[hidden] {
         display: none;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 0;
+        margin: 15px auto;
+        border: 1px solid #333;
+        font-family: Courier, Monaco, monospace;
+        whitespace: pre;
+        overflow-wrap: break-word;
+        overflow: scroll-y;
+        resize: none;
+        min-height: calc(100vh - 10em);
+      }
+      h2 {
+        margin: 0;
       }
       `
     ];
@@ -49,7 +66,6 @@ class FileEditor extends connect(store)(LitElement) {
     return {
       entry: { type: Object },
       fileData: { type: String },
-      editAreaHeight: { type: String },
     };
   }
 
@@ -59,7 +75,6 @@ class FileEditor extends connect(store)(LitElement) {
 
   captureChange(e) {
     this.changeBuffer = e.target.value;
-    this.editAreaHeight = e.target.scrollHeight + 'px';
   }
 
   saveFile() {
@@ -88,49 +103,23 @@ class FileEditor extends connect(store)(LitElement) {
       this.isEmpty = false;
       this.fileName = this.entry.handle.name;
       this.fileData = state.files.editorFileData;
+    } else {
+      // Clear out stale data if any, or initialize.
+      this.entry = null;
+      this.fileName = null;
+      this.fileData = null;
+      this.changeBuffer = null;
+      this.isEmpty = false;
     }
   }
 
-  constructor() {
-    super();
-    this.entry = null;
-    this.fileName = "Untitled";
-    this.fileData = null;
-    this.changeBuffer = null;
-    this.editAreaHeight = "auto";
-    this.isEmpty = false;
-  }
-
-  updated() {
-    // Auto-resizing for textarea.
-    let textarea = this.shadowRoot.querySelector('textarea');
-    let expectedHeight = textarea.scrollHeight + "px";
-    textarea.style.height = expectedHeight;
-  }
-
   render() {
+    let fileName = this.fileName ? this.fileName : "Untitled";
+
     return html`
-      <style>
-        textarea {
-          width: 100%;
-          padding: 0;
-          margin: 15px auto;
-          border: 1px solid #333;
-          font-family: Courier, Monaco, monospace;
-          whitespace: pre;
-          overflow-wrap: break-word;
-          overflow: hidden;
-          resize: none;
-          height: auto;
-          height: ${this.editAreaHeight};
-        }
-        h2 {
-          margin: 0;
-        }
-      </style>
       <section ?active="${!!this.entry}">
         <div class="contents">
-          <h2>${this.fileName}</h2>
+          <h2>${fileName}</h2>
           <nav>
             <button ?hidden="${this.isEmpty}" @click="${this.saveFile}">Save</button>
             <button @click="${this.saveAs}">Save As</button>
