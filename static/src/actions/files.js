@@ -7,7 +7,7 @@ export const openViewer = (entry) => (dispatch) => {
   return async function(entry, dispatch) {
     // File may have changed.
     entry.file = await entry.handle.getFile();
-    let objectURL = URL.createObjectURL(entry.file);
+    const objectURL = URL.createObjectURL(entry.file);
     dispatch({
       type: OPEN_VIEWER,
       entry,
@@ -30,12 +30,12 @@ export const openEditor = (entry) => (dispatch) => {
       // File may have changed.
       entry.file = await entry.handle.getFile();
       fileData = await new Promise((resolve, reject) => {
-        let reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = (e) => {
           resolve(e.target.result);
         };
         reader.onabort = (e) => {
-          resolve("");
+          resolve('');
         };
         reader.onerror = (e) => {
           reject(e);

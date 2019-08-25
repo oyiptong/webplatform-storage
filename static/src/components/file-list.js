@@ -1,7 +1,7 @@
-import { LitElement, html, css } from 'lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
-import { openViewer, openEditor } from '../actions/files.js';
+import {LitElement, html, css} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
+import {openViewer, openEditor} from '../actions/files.js';
 
 class FileList extends connect(store)(LitElement) {
   static get styles() {
@@ -33,24 +33,24 @@ class FileList extends connect(store)(LitElement) {
     this.entries = [];
     this.lastChange = null;
     this.editables = new Set([
-      "application/json",
-      "application/x-sh",
+      'application/json',
+      'application/x-sh',
     ]);
   }
 
   isPreviewable(type) {
-    if (type === "directory") {
+    if (type === 'directory') {
       return false;
     }
 
     if (this.debug) {
       return true;
     }
-    return type.startsWith("image/") && type != "image/svg+xml";
+    return type.startsWith('image/') && type != 'image/svg+xml';
   }
 
   isEditable(type) {
-    if (type === "directory") {
+    if (type === 'directory') {
       return false;
     }
 
@@ -58,7 +58,7 @@ class FileList extends connect(store)(LitElement) {
       return true;
     }
 
-    if (type.startsWith("text/")) {
+    if (type.startsWith('text/')) {
       return true;
     }
     return this.editables.has(type);
@@ -99,15 +99,17 @@ class FileList extends connect(store)(LitElement) {
           </tr>
         </thead>
         <tbody>
-          ${this.entries.map(entry => {
-            let actions = [];
-            if (this.isPreviewable(entry.type)) {
-              actions.push(html`<button @click="${this.triggerView(entry)}">View</button>`);
-            }
-            if (this.isEditable(entry.type)) {
-              actions.push(html`<button @click="${this.triggerEdit(entry)}">Edit</button>`);
-            }
-            return html`
+          ${this.entries.map((entry) => {
+    const actions = [];
+    if (this.isPreviewable(entry.type)) {
+      actions.push(html`<button @click="${this.triggerView(entry)}">
+                          View</button>`);
+    }
+    if (this.isEditable(entry.type)) {
+      actions.push(html`<button @click="${this.triggerEdit(entry)}">
+                          Edit</button>`);
+    }
+    return html`
             <tr>
               <td ?directory="${!entry.file}">${entry.name}</td>
               <td>${entry.size}</td>
@@ -115,7 +117,7 @@ class FileList extends connect(store)(LitElement) {
               <td>${actions}</td>
             </tr>
             `;
-          })}
+  })}
         </tbody>
       </table>
     `;

@@ -1,7 +1,6 @@
-import { LitElement, html } from 'lit-element';
-import { updateMetadata } from 'pwa-helpers/metadata.js';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
+import {LitElement, html} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
 
 class App404 extends connect(store)(LitElement) {
   render() {

@@ -1,5 +1,5 @@
 import * as filesize from 'filesize';
-import { openEditor } from '../actions/files.js';
+import {openEditor} from '../actions/files.js';
 
 export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
@@ -10,53 +10,53 @@ export const CLOSE_ALL_HANDLES = 'CLOSE_ALL_HANDLES';
 
 const fileExtensionRE = /(?:\.([^.]+))?$/;
 const textExtensions = new Set([
-  "sql",
-  "cfg",
-  "csv",
-  "tsv",
-  "go",
-  "mod",
-  "sum",
-  "rs",
-  "h",
-  "cpp",
-  "c",
-  "cc",
-  "py",
-  "rb",
-  "pl",
-  "yaml",
-  "yml",
-  "toml",
-  "jinja",
-  "coffee",
-  "js",
-  "mjs",
-  "jsm",
-  "ts",
-  "jsx",
-  "tsx",
-  "sh",
-  "css",
-  "scss",
-  "less",
-  "haml",
-  "lock",
-  "gitignore",
-  "zshrc",
-  "bashrc",
-  "profile",
-  "rst",
-  "r",
-  "log",
-  "nfo",
-  "md",
-  "json",
-  "txt",
-  "html",
-  "htm",
-  "xhtml",
-  "ics",
+  'sql',
+  'cfg',
+  'csv',
+  'tsv',
+  'go',
+  'mod',
+  'sum',
+  'rs',
+  'h',
+  'cpp',
+  'c',
+  'cc',
+  'py',
+  'rb',
+  'pl',
+  'yaml',
+  'yml',
+  'toml',
+  'jinja',
+  'coffee',
+  'js',
+  'mjs',
+  'jsm',
+  'ts',
+  'jsx',
+  'tsx',
+  'sh',
+  'css',
+  'scss',
+  'less',
+  'haml',
+  'lock',
+  'gitignore',
+  'zshrc',
+  'bashrc',
+  'profile',
+  'rst',
+  'r',
+  'log',
+  'nfo',
+  'md',
+  'json',
+  'txt',
+  'html',
+  'htm',
+  'xhtml',
+  'ics',
 ]);
 
 export const openHandles = (handles) => {
@@ -74,26 +74,30 @@ async function asyncProcessHandles(handles, dispatch, getState) {
   }
 }
 
-async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null, level = 0) {
+async function asyncEntriesFromHandle(handle,
+    dispatch,
+    getState,
+    parent = null,
+    level = 0) {
   if (!getState().filesystem.handlesOpenAllowed) {
     return;
   }
-  let subHandles = [];
-  let entry = {
+  const subHandles = [];
+  const entry = {
     handle,
     file: null,
-    type: "directory",
+    type: 'directory',
     size: null,
     parent,
     level,
   };
   if (handle.isFile) {
-    let file = await handle.getFile();
+    const file = await handle.getFile();
     entry.file = file;
     entry.type = deduceType(file);
-    entry.size = filesize(file.size, {standard: "iec"});
+    entry.size = filesize(file.size, {standard: 'iec'});
   } else {
-    let subHandlesIter = await handle.getEntries();
+    const subHandlesIter = await handle.getEntries();
     let itemCount = 0;
     for await (const subHandle of subHandlesIter) {
       itemCount++;
@@ -101,30 +105,34 @@ async function asyncEntriesFromHandle(handle, dispatch, getState, parent = null,
     }
     entry.size = `${itemCount} items`;
   }
-  entry.name = handle.isFile ? handle.name : handle.name + "/";
+  entry.name = handle.isFile ? handle.name : handle.name + '/';
 
   dispatch({
     type: OPEN_ENTRIES,
     entries: [entry],
   });
   await Promise.all(
-      subHandles.map((subHandle) => asyncEntriesFromHandle(subHandle, dispatch, getState, handle, level+1)));
+      subHandles.map((subHandle) => asyncEntriesFromHandle(subHandle,
+          dispatch,
+          getState,
+          handle,
+          level+1)));
 }
 
 function deduceType(file) {
   if (file.type) {
     return file.type;
   }
-  let nameSplit = fileExtensionRE.exec(file.name.toLowerCase());
+  const nameSplit = fileExtensionRE.exec(file.name.toLowerCase());
 
-  let ext = nameSplit[1];
+  const ext = nameSplit[1];
   if (ext) {
     if (textExtensions.has(ext)) {
-      return "text/plain";
+      return 'text/plain';
     }
   }
 
-  return "unknown";
+  return 'unknown';
 }
 
 export const closeHandle = (handle) => (dispatch) => {
@@ -145,7 +153,7 @@ export const removeEntry = (handle, name) => (dispatch) => {
 export const writeFile = (entry, data) => (dispatch) => {
   return async function(entry, data) {
     entry = await writeDataToFile(entry, data);
-    if(entry) {
+    if (entry) {
       dispatch({
         type: ENTRY_CHANGED,
         entry,
@@ -156,7 +164,7 @@ export const writeFile = (entry, data) => (dispatch) => {
 
 export const saveAs = (data) => (dispatch, getState) => {
   return async function(data) {
-    let handle = await window.chooseFileSystemEntries({type: "saveFile"});
+    const handle = await window.chooseFileSystemEntries({type: 'saveFile'});
     await openHandles([handle])(dispatch, getState);
 
     let entry = {handle};
@@ -166,16 +174,16 @@ export const saveAs = (data) => (dispatch, getState) => {
 };
 
 async function writeDataToFile(entry, data) {
-  let handle = entry.handle;
+  const handle = entry.handle;
   if (handle.isFile) {
-    let writer = await handle.createWriter();
+    const writer = await handle.createWriter();
     await writer.truncate(0);
     await writer.write(0, new Blob([data]));
     if (writer.close) {
       await writer.close();
     }
     entry.file = await handle.getFile();
-    entry.size = filesize(entry.file.size, {standard: "iec"});
+    entry.size = filesize(entry.file.size, {standard: 'iec'});
 
     return entry;
   }

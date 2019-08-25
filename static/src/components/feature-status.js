@@ -1,8 +1,7 @@
-import { LitElement, html, css } from 'lit-element';
-import { updateMetadata } from 'pwa-helpers/metadata.js';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
-import { toggleDebug } from '../actions/app.js';
+import {LitElement, html, css} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
+import {toggleDebug} from '../actions/app.js';
 
 class FeatureStatus extends connect(store)(LitElement) {
   static get styles() {
@@ -84,51 +83,53 @@ class FeatureStatus extends connect(store)(LitElement) {
       return;
     }
     this.debug = state.app.debug;
-    let enabled = state.app.featuresEnabled;
-    for (let want of this.wantList) {
-      let available = !!state.features[want];
+    const enabled = state.app.featuresEnabled;
+    for (const want of this.wantList) {
+      const available = !!state.features[want];
       this.capabilities[want].available = available;
       this.capabilities[want].enabled = enabled.has(want);
     }
   }
 
   render() {
-    let debugStatus = "";
-    let debugText = "OFF";
+    let debugStatus = '';
+    let debugText = 'OFF';
     if (this.debug) {
-      debugStatus = "text-danger";
-      debugText = "ON";
+      debugStatus = 'text-danger';
+      debugText = 'ON';
     }
     return html`
     <table class="feature-status-table">
       <tr>
         <td class="label">
-          <button class="debug-btn" @click="${this.triggerDebug}">Debug Mode</button>
+          <button class="debug-btn" @click="${this.triggerDebug}">
+            Debug Mode
+          </button>
         </td>
         <td class="status-text ${debugStatus}">${debugText}</td>
       </tr>
-    ${this.wantList.map(want => {
-      let feature = this.capabilities[want];
-      let statusClass = "text-danger";
-      let statusText = "OK";
+    ${this.wantList.map((want) => {
+    const feature = this.capabilities[want];
+    let statusClass = 'text-danger';
+    let statusText = 'OK';
 
-      if (feature.enabled && feature.available) {
-        statusClass = "text-success";
-      }
+    if (feature.enabled && feature.available) {
+      statusClass = 'text-success';
+    }
 
-      if (!feature.available) {
-        statusText = "Not Available";
-      } else if (!feature.enabled) {
-        statusText = "Disabled";
-      }
+    if (!feature.available) {
+      statusText = 'Not Available';
+    } else if (!feature.enabled) {
+      statusText = 'Disabled';
+    }
 
-      return html`
+    return html`
         <tr>
         <td class="label">${feature.label}</td>
         <td class="status-text ${statusClass}">${statusText}</td>
         </tr>
       `;
-    })}
+  })}
     </table>
     `;
   }

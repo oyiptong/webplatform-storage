@@ -1,7 +1,7 @@
-import { LitElement, html, css } from 'lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
-import { closeViewer } from '../actions/files.js';
+import {LitElement, html, css} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
+import {closeViewer} from '../actions/files.js';
 
 class FileViewer extends connect(store)(LitElement) {
   static get styles() {
@@ -45,7 +45,7 @@ class FileViewer extends connect(store)(LitElement) {
 
   static get properties() {
     return {
-      entry: { type: Object },
+      entry: {type: Object},
     };
   }
 
@@ -57,7 +57,7 @@ class FileViewer extends connect(store)(LitElement) {
     this.entry = state.files.viewerEntry;
 
     if (this.entry) {
-      if (this.entry.type.startsWith("image/")) {
+      if (this.entry.type.startsWith('image/')) {
         this.imageDataURL = state.files.viewerObjectURL;
       }
     } else {
@@ -75,7 +75,7 @@ class FileViewer extends connect(store)(LitElement) {
     return html`
       <section ?active="${this.entry}" @click="${this.closeViewer}">
         <div class="contents">
-          <image src="${this.imageDataURL ? this.imageDataURL : ""}"></image>
+          <image src="${this.imageDataURL ? this.imageDataURL : ''}"></image>
         </div>
       </section>
     `;

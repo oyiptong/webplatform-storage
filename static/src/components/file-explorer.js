@@ -1,9 +1,9 @@
-import { LitElement, html, css } from 'lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
-import { openEditor } from '../actions/files.js';
-import { openHandles, closeAllHandles } from '../actions/filesystem.js';
-import('../components/file-list.js');
+import {LitElement, html, css} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
+import {openEditor} from '../actions/files.js';
+import {openHandles, closeAllHandles} from '../actions/filesystem.js';
+import '../components/file-list.js';
 
 class FileExplorer extends connect(store)(LitElement) {
   static get styles() {
@@ -27,7 +27,9 @@ class FileExplorer extends connect(store)(LitElement) {
         font-weight: bold;
         text-transform: uppercase;
         margin-left: 15px;
-        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0,0,0,.12);
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+                    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+                    0px 1px 5px 0px rgba(0,0,0,.12);
         border: none;
         border-radius: 4px;
       }
@@ -59,9 +61,9 @@ class FileExplorer extends connect(store)(LitElement) {
   openFilepicker(options) {
     return async function(e) {
       try {
-        let handles = await window.chooseFileSystemEntries(options);
+        const handles = await window.chooseFileSystemEntries(options);
         store.dispatch(openHandles(handles));
-      } catch(e) {
+      } catch (e) {
         console.log(e);
       }
     };
@@ -77,7 +79,7 @@ class FileExplorer extends connect(store)(LitElement) {
 
   static get properties() {
     return {
-      showCloseButton: { type: Boolean },
+      showCloseButton: {type: Boolean},
     };
   }
 
@@ -96,9 +98,15 @@ class FileExplorer extends connect(store)(LitElement) {
     return html`
       <div class="row">
           <button @click="${this.newFile}" class="new-file">New File</button>
-          <button @click="${this.openFilepicker({type: "openDirectory", multiple: true})}" class="directory">Open Directory</button>
-          <button @click="${this.openFilepicker({type: "openFile", multiple: true})}" class="files">Open Files</button>
-          <button @click="${this.closeAllHandles}" ?hidden="${!this.showCloseButton}" class="close-all">Close All Files</button>
+          <button @click="${this.openFilepicker(
+      {type: 'openDirectory', multiple: true})}"
+                  class="directory">Open Directory</button>
+          <button @click="${this.openFilepicker(
+      {type: 'openFile', multiple: true})}"
+                  class="files">Open Files</button>
+          <button @click="${this.closeAllHandles}"
+                  ?hidden="${!this.showCloseButton}"
+                  class="close-all">Close All Files</button>
       </div>
       <hr>
       <file-list class="row"></file-list>

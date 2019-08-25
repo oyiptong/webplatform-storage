@@ -1,11 +1,16 @@
-import { OPEN_VIEWER, CLOSE_VIEWER, OPEN_EDITOR, CLOSE_EDITOR } from '../actions/files.js';
+import {
+  OPEN_VIEWER,
+  CLOSE_VIEWER,
+  OPEN_EDITOR,
+  CLOSE_EDITOR,
+} from '../actions/files.js';
 
 const defaultState = {
   viewerEntry: null,
 };
 
 const files = (state = defaultState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case OPEN_VIEWER:
       return {
         ...state,
@@ -18,17 +23,17 @@ const files = (state = defaultState, action) => {
         viewerEntry: null,
       };
     case OPEN_EDITOR:
-    return {
-      ...state,
-      editorEntry: action.entry,
-      editorFileData: action.fileData,
-    };
+      return {
+        ...state,
+        editorEntry: action.entry,
+        editorFileData: action.fileData,
+      };
     case CLOSE_EDITOR:
-    return {
-      ...state,
-      editorEntry: null,
-      editorFileData: null,
-    };
+      return {
+        ...state,
+        editorEntry: null,
+        editorFileData: null,
+      };
     default:
       return state;
   }

@@ -1,8 +1,8 @@
-import { LitElement, html, css } from 'lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
-import { closeEditor } from '../actions/files.js';
-import { writeFile, saveAs } from '../actions/filesystem.js';
+import {LitElement, html, css} from 'lit-element';
+import {connect} from 'pwa-helpers/connect-mixin.js';
+import {store} from '../store.js';
+import {closeEditor} from '../actions/files.js';
+import {writeFile, saveAs} from '../actions/filesystem.js';
 
 class FileEditor extends connect(store)(LitElement) {
   static get styles() {
@@ -64,8 +64,8 @@ class FileEditor extends connect(store)(LitElement) {
 
   static get properties() {
     return {
-      entry: { type: Object },
-      fileData: { type: String },
+      entry: {type: Object},
+      fileData: {type: String},
     };
   }
 
@@ -96,7 +96,7 @@ class FileEditor extends connect(store)(LitElement) {
     if (this.entry) {
       if (this.entry.isEmpty) {
         this.isEmpty = true;
-        this.fileData = "";
+        this.fileData = '';
         return;
       }
 
@@ -114,18 +114,23 @@ class FileEditor extends connect(store)(LitElement) {
   }
 
   render() {
-    let fileName = this.fileName ? this.fileName : "Untitled";
+    const fileName = this.fileName ? this.fileName : 'Untitled';
 
     return html`
       <section ?active="${!!this.entry}">
         <div class="contents">
           <h2>${fileName}</h2>
           <nav>
-            <button ?hidden="${this.isEmpty}" @click="${this.saveFile}">Save</button>
+            <button ?hidden="${this.isEmpty}" @click="${this.saveFile}">
+              Save
+            </button>
             <button @click="${this.saveAs}">Save As</button>
             <button @click="${this.closeEditor}">Close Editor</button>
           </nav>
-          <textarea wrap="off" rows="1" @input="${this.captureChange}" .value="${this.fileData}"></textarea>
+          <textarea wrap="off"
+                    rows="1"
+                    @input="${this.captureChange}"
+                    .value="${this.fileData}"></textarea>
         </div>
       </section>
     `;
