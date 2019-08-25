@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = ({ mode }) => {
+module.exports = ({mode}) => {
   return {
     mode,
     plugins: [
