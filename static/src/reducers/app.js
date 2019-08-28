@@ -14,15 +14,9 @@ const app = (state = defaultState, action) => {
         page: action.page,
       };
     case TOGGLE_DEBUG_MODE:
-      const debug = !state.debug;
-      if (debug) {
-        window.localStorage.setItem('debug', 1);
-      } else {
-        window.localStorage.removeItem('debug');
-      }
       return {
         ...state,
-        debug,
+        debug: action.debug,
       };
     default:
       return state;

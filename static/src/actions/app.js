@@ -1,8 +1,14 @@
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
 
-export const toggleDebug = (dispatch) => {
-  dispatch({type: TOGGLE_DEBUG_MODE});
+export const toggleDebug = (dispatch, getState) => {
+  const debug = !getState().app.debug;
+  if (debug) {
+    window.localStorage.setItem('debug', 1);
+  } else {
+    window.localStorage.removeItem('debug');
+  }
+  dispatch({type: TOGGLE_DEBUG_MODE, debug});
 };
 
 export const navigate = (location) => (dispatch) => {
