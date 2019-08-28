@@ -19,17 +19,15 @@ const filesystem = (state = defaultState, action) => {
         handlesOpenAllowed: true,
       };
     case OPEN_ENTRIES:
-      let newState = state;
+    // If handlesOpenAllowed is false, it effectively ignores ongoing handlesOpenAllowed actions.
+      // A poor person's cancel, if you will.
       if (state.handlesOpenAllowed) {
-        const entries = state.entries.concat(action.entries);
-
-        newState = {
+        return {
           ...state,
-          entries,
-          lastChange: Math.floor(Date.now() / 1000),
+          entries: action.entries,
+          lastChange: action.lastChange,
         };
       }
-      return newState;
     case CLOSE_ALL_HANDLES:
       return {
         ...state,
@@ -39,7 +37,8 @@ const filesystem = (state = defaultState, action) => {
     case ENTRY_CHANGED:
       return {
         ...state,
-        lastChange: Math.floor(Date.now() / 1000),
+        entries: action.entries,
+        lastChange: action.lastChange,
       };
     default:
       return state;

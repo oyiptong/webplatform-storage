@@ -107,9 +107,14 @@ async function asyncEntriesFromHandle(handle,
   }
   entry.name = handle.isFile ? handle.name : handle.name + '/';
 
+  const entries = getState()
+      .filesystem
+      .entries.concat([entry]);
+
   dispatch({
     type: OPEN_ENTRIES,
-    entries: [entry],
+    entries,
+    lastChange: Math.floor(Date.now() / 1000),
   });
   await Promise.all(
       subHandles.map((subHandle) => asyncEntriesFromHandle(subHandle,
@@ -150,15 +155,9 @@ export const removeEntry = (handle, name) => (dispatch) => {
   });
 };
 
-export const writeFile = (entry, data) => (dispatch) => {
+export const writeFile = (entry, data) => (dispatch, getState) => {
   return async function(entry, data) {
-    entry = await writeDataToFile(entry, data);
-    if (entry) {
-      dispatch({
-        type: ENTRY_CHANGED,
-        entry,
-      });
-    }
+    await writeDataToFile(entry, data, dispatch, getState);
   }(entry, data);
 };
 
@@ -167,13 +166,12 @@ export const saveAs = (data) => (dispatch, getState) => {
     const handle = await window.chooseFileSystemEntries({type: 'saveFile'});
     await openHandles([handle])(dispatch, getState);
 
-    let entry = {handle};
-    entry = await writeDataToFile(entry, data);
+    const entry = await writeDataToFile({handle}, data, dispatch, getState);
     return openEditor(entry)(dispatch);
   }(data);
 };
 
-async function writeDataToFile(entry, data) {
+async function writeDataToFile(entry, data, dispatch, getState) {
   const handle = entry.handle;
   if (handle.isFile) {
     const writer = await handle.createWriter();
@@ -184,6 +182,15 @@ async function writeDataToFile(entry, data) {
     }
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
+
+    if (entry) {
+      dispatch({
+        type: ENTRY_CHANGED,
+        // Make a copy so redux knows the state has changed.
+        entries: getState().filesystem.entries.concat(),
+        lastChange: Math.floor(Date.now() / 1000),
+      });
+    }
 
     return entry;
   }

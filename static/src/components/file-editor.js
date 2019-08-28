@@ -78,16 +78,10 @@ class FileEditor extends connect(store)(LitElement) {
   }
 
   saveFile() {
-    if (!this.changeBuffer) {
-      this.changeBuffer = this.fileData;
-    }
     store.dispatch(writeFile(this.entry, this.changeBuffer));
   }
 
   saveAs() {
-    if (!this.changeBuffer) {
-      this.changeBuffer = this.fileData;
-    }
     store.dispatch(saveAs(this.changeBuffer));
   }
 
@@ -103,6 +97,7 @@ class FileEditor extends connect(store)(LitElement) {
       this.isEmpty = false;
       this.fileName = this.entry.handle.name;
       this.fileData = state.files.editorFileData;
+      this.changeBuffer = this.fileData;
     } else {
       // Clear out stale data if any, or initialize.
       this.entry = null;
