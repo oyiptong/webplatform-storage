@@ -19,8 +19,9 @@ const filesystem = (state = defaultState, action) => {
         handlesOpenAllowed: true,
       };
     case OPEN_ENTRIES:
-    // If handlesOpenAllowed is false, it effectively ignores ongoing handlesOpenAllowed actions.
-      // A poor person's cancel, if you will.
+      // If handlesOpenAllowed is false, it effectively ignores
+      // ongoing handlesOpenAllowed actions. A poor person's
+      // cancel, if you will.
       if (state.handlesOpenAllowed) {
         return {
           ...state,
