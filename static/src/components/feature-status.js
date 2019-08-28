@@ -79,13 +79,13 @@ class FeatureStatus extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    if (!state.features) {
+    if (!state.features || !state.features.capabilities) {
       return;
     }
     this.debug = state.app.debug;
     const enabled = state.app.featuresEnabled;
     for (const want of this.wantList) {
-      const available = !!state.features[want];
+      const available = !!state.features.capabilities[want];
       this.capabilities[want].available = available;
       this.capabilities[want].enabled = enabled.has(want);
     }
