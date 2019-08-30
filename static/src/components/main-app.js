@@ -9,6 +9,7 @@ import '../components/feature-status.js';
 import '../components/file-explorer.js';
 import '../components/file-viewer.js';
 import '../components/file-editor.js';
+import '../components/error-prompt.js';
 
 class MainApp extends connect(store)(LitElement) {
   static get styles() {
@@ -20,15 +21,20 @@ class MainApp extends connect(store)(LitElement) {
       ._page[active] {
         display: block;
       }
+      error-prompt {
+        position: absolute;
+        z-index: 900;
+      }
      `
     ];
   }
 
   static get properties() {
     return {
-      _page: String,
-      message: String,
-      featureWantList: Array,
+      _page: {type: String},
+      message: {type: String},
+      featureWantList: {type: Array},
+      errorToPrompt: {type: Object},
     };
   }
 
@@ -46,13 +52,16 @@ class MainApp extends connect(store)(LitElement) {
 
   stateChanged(state) {
     this._page = state.app.page;
+    this.errorToPrompt = state.app.errorToPrompt;
   }
 
   render() {
+    const hasError = !!this.errorToPrompt;
     return html`
       <h1>Native File System Demo</h1>
       <feature-status></feature-status>
       <main role="main" class="main-content">
+        <error-prompt class="_page" ?active="${hasError}"></error-prompt>
         <file-viewer class="_page" ?active="${this._page === 'home'}">
         </file-viewer>
         <file-editor class="_page" ?active="${this._page === 'home'}">

@@ -1,5 +1,10 @@
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
+export const SHOW_ERROR_PROMPT = 'SHOW_ERROR_PROMPT';
+export const CLOSE_ERROR_PROMPT = 'CLOSE_ERROR_PROMPT';
+
+export const WRITE_PERMISSION_ERROR = 'WRITE_PERMISSION_ERROR';
+export const FEATURE_NOT_ENABLED_ERROR = 'FEATURE_NOT_ENABLED_ERROR';
 
 export const toggleDebug = (dispatch, getState) => {
   const debug = !getState().app.debug;
@@ -47,4 +52,38 @@ const updatePage = (page) => {
     type: UPDATE_PAGE,
     page
   };
+};
+
+export const showErrorPrompt = (errorType,
+    errorMessage,
+    dispatch) => {
+  let title = 'Unknown Error';
+  let explanation = 'An error happened.';
+  let nextSteps = 'Please retry.';
+  const message = errorMessage;
+
+  switch (errorType) {
+    case WRITE_PERMISSION_ERROR:
+      title = 'Permission Error';
+      explanation = 'An error ocurred while writing the file:';
+      nextSteps = 'Please check your permissions and try again.';
+      break;
+    case FEATURE_NOT_ENABLED_ERROR:
+      title = 'Feature Not Enabled';
+      explanation = 'The Native File System API is not enabled.';
+      nextSteps = 'Please go to chrome://flags and enable the feature.';
+      break;
+    default:
+      console.log('Unknown error being prompted.');
+  }
+  dispatch({
+    type: SHOW_ERROR_PROMPT,
+    errorToPrompt: {title, explanation, message, nextSteps},
+  });
+};
+
+export const closeErrorPrompt = (dispatch) => {
+  dispatch({
+    type: CLOSE_ERROR_PROMPT,
+  });
 };

@@ -3,14 +3,9 @@ import {
   CLOSE_VIEWER,
   OPEN_EDITOR,
   CLOSE_EDITOR,
-  SHOW_ERROR_EDITOR,
-  CLOSE_ERROR_EDITOR,
 } from '../actions/files.js';
 
-const defaultState = {
-  viewerEntry: null,
-  permissionError: null,
-};
+const defaultState = {};
 
 const files = (state = defaultState, action) => {
   switch (action.type) {
@@ -36,16 +31,6 @@ const files = (state = defaultState, action) => {
         ...state,
         editorEntry: null,
         editorFileData: null,
-      };
-    case SHOW_ERROR_EDITOR:
-      return {
-        ...state,
-        errorToPrompt: action.errorToPrompt,
-      };
-    case CLOSE_ERROR_EDITOR:
-      return {
-        ...state,
-        errorToPrompt: null,
       };
     default:
       return {

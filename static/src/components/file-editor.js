@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
-import {closeEditor, editorCloseErrorPrompt} from '../actions/files.js';
+import {closeEditor} from '../actions/files.js';
 import {writeFile, saveAs} from '../actions/filesystem.js';
 
 class FileEditor extends connect(store)(LitElement) {
@@ -59,36 +59,6 @@ class FileEditor extends connect(store)(LitElement) {
       h2 {
         margin: 0;
       }
-
-      #modal {
-        position: fixed;
-        background-color: rgba(0.7, 0, 0, 0.5);
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-      }
-
-      #error-prompt {
-        position: absolute;
-        top: 5%;
-        min-height: 100px;
-        width: 80%;
-        border: 5px solid red;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 1em;
-        background-color: #FFF;
-      }
-
-      #error-message {
-        font-family: monospace;
-        border: 1px solid #EEE;
-      }
-
-      #error-prompt button {
-        float: right;
-      }
       `
     ];
   }
@@ -96,7 +66,6 @@ class FileEditor extends connect(store)(LitElement) {
   static get properties() {
     return {
       entry: {type: Object},
-      errorToPrompt: {type: Object},
       fileData: {type: String},
     };
   }
@@ -124,7 +93,6 @@ class FileEditor extends connect(store)(LitElement) {
   stateChanged(state) {
     this.entry = state.files.editorEntry;
     if (this.entry) {
-      this.errorToPrompt = state.files.errorToPrompt;
       if (this.entry.isEmpty) {
         this.isEmpty = true;
         this.fileData = '';
@@ -142,15 +110,11 @@ class FileEditor extends connect(store)(LitElement) {
       this.fileData = null;
       this.changeBuffer = null;
       this.isEmpty = false;
-      this.errorToPrompt = null;
     }
   }
 
   render() {
     const fileName = this.fileName ? this.fileName : 'Untitled';
-    const hasError = this.errorToPrompt != null;
-    const error = hasError ? this.errorToPrompt : {};
-
     return html`
       <section ?active="${!!this.entry}">
         <div class="contents">
@@ -166,16 +130,6 @@ class FileEditor extends connect(store)(LitElement) {
                     rows="1"
                     @input="${this.captureChange}"
                     .value="${this.fileData}"></textarea>
-          <div id="modal" ?hidden="${!hasError}">
-            <div id="error-prompt">
-              <h2>${error.title}</h2>
-              <p>${error.explanation}</p>
-              <p id="error-message">${error.message}</p>
-              <p>${error.nextSteps}</p>
-              <button @click="${this.closeErrorPrompt}">Close</button>
-            </div>
-          </> <!-- modal -->
-        </div>
       </section>
     `;
   };
