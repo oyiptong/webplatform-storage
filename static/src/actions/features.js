@@ -31,7 +31,10 @@ function detectNativeFS() {
 export const checkCapabilities = (featureList) => (dispatch) => {
   const capabilities = verifyPlatformCapabilities(featureList);
   if (!capabilities['nativefs']) {
-    showErrorPrompt(FEATURE_NOT_ENABLED_ERROR, 'window.chooseFileSystemEntries is undefined.', dispatch);
+    showErrorPrompt(
+        FEATURE_NOT_ENABLED_ERROR,
+        'window.chooseFileSystemEntries is undefined.',
+        dispatch);
   }
   dispatch({
     type: FEATURE_CHECK,
