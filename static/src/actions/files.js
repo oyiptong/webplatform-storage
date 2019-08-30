@@ -2,8 +2,10 @@ export const OPEN_VIEWER = 'OPEN_VIEWER';
 export const CLOSE_VIEWER = 'CLOSE_VIEWER';
 export const OPEN_EDITOR = 'OPEN_EDITOR';
 export const CLOSE_EDITOR = 'CLOSE_EDITOR';
-export const SHOW_PERMISSION_ERROR_EDITOR = 'SHOW_PERMISSION_ERROR_EDITOR';
-export const CLOSE_PERMISSION_ERROR_EDITOR = 'CLOSE_PERMISSION_ERROR_EDITOR';
+export const SHOW_ERROR_EDITOR = 'SHOW_ERROR_EDITOR';
+export const CLOSE_ERROR_EDITOR = 'CLOSE_ERROR_EDITOR';
+
+export const WRITE_PERMISSION_ERROR = 'WRITE_PERMISSION_ERROR';
 
 export const openViewer = (entry) => (dispatch) => {
   return async function(entry, dispatch) {
@@ -60,17 +62,31 @@ export const closeEditor = (dispatch) => {
   });
 };
 
-export const editorShowPermissionError = (errorMessage,
-    permissionStatus,
+export const editorShowErrorPrompt = (errorType,
+    errorMessage,
     dispatch) => {
+  let title = 'Unknown Error';
+  let explanation = 'An error happened.';
+  let nextSteps = 'Please retry.';
+  const message = errorMessage;
+
+  switch (errorType) {
+    case WRITE_PERMISSION_ERROR:
+      title = 'Permission Error';
+      explanation = 'An error ocurred while writing the file:';
+      nextSteps = 'Please check your permissions and try again.';
+      break;
+    default:
+      console.log('Unknown error being prompted.');
+  }
   dispatch({
-    type: SHOW_PERMISSION_ERROR_EDITOR,
-    permissionError: {errorMessage, permissionStatus},
+    type: SHOW_ERROR_EDITOR,
+    errorToPrompt: {title, explanation, message, nextSteps},
   });
 };
 
-export const editorClosePermissionError = (dispatch) => {
+export const editorCloseErrorPrompt = (dispatch) => {
   dispatch({
-    type: CLOSE_PERMISSION_ERROR_EDITOR,
+    type: CLOSE_ERROR_EDITOR,
   });
 };

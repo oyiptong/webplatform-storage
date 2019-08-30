@@ -1,5 +1,9 @@
 import * as filesize from 'filesize';
-import {openEditor, editorShowPermissionError} from '../actions/files.js';
+import {
+  openEditor,
+  editorShowErrorPrompt,
+  WRITE_PERMISSION_ERROR
+} from '../actions/files.js';
 
 export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
@@ -189,8 +193,11 @@ async function writeDataToFile(entry, data, dispatch, getState) {
       writer = await handle.createWriter();
     } catch (e) {
       const permissionStatus = await handle.queryPermission({writable: true});
-      editorShowPermissionError(e.message, permissionStatus, dispatch);
-      console.log('error');
+      if (permissionStatus == 'denied') {
+        editorShowErrorPrompt(WRITE_PERMISSION_ERROR, e.message, dispatch);
+      } else {
+        editorShowErrorPrompt('', e.message, dispatch);
+      }
       return null;
     }
     await writer.truncate(0);
