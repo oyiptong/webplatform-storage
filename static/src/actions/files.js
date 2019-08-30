@@ -2,6 +2,8 @@ export const OPEN_VIEWER = 'OPEN_VIEWER';
 export const CLOSE_VIEWER = 'CLOSE_VIEWER';
 export const OPEN_EDITOR = 'OPEN_EDITOR';
 export const CLOSE_EDITOR = 'CLOSE_EDITOR';
+export const SHOW_PERMISSION_ERROR_EDITOR = 'SHOW_PERMISSION_ERROR_EDITOR';
+export const CLOSE_PERMISSION_ERROR_EDITOR = 'CLOSE_PERMISSION_ERROR_EDITOR';
 
 export const openViewer = (entry) => (dispatch) => {
   return async function(entry, dispatch) {
@@ -55,5 +57,20 @@ export const openEditor = (entry) => (dispatch) => {
 export const closeEditor = (dispatch) => {
   dispatch({
     type: CLOSE_EDITOR,
+  });
+};
+
+export const editorShowPermissionError = (errorMessage,
+    permissionStatus,
+    dispatch) => {
+  dispatch({
+    type: SHOW_PERMISSION_ERROR_EDITOR,
+    permissionError: {errorMessage, permissionStatus},
+  });
+};
+
+export const editorClosePermissionError = (dispatch) => {
+  dispatch({
+    type: CLOSE_PERMISSION_ERROR_EDITOR,
   });
 };

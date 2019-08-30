@@ -3,10 +3,13 @@ import {
   CLOSE_VIEWER,
   OPEN_EDITOR,
   CLOSE_EDITOR,
+  SHOW_PERMISSION_ERROR_EDITOR,
+  CLOSE_PERMISSION_ERROR_EDITOR,
 } from '../actions/files.js';
 
 const defaultState = {
   viewerEntry: null,
+  permissionError: null,
 };
 
 const files = (state = defaultState, action) => {
@@ -34,7 +37,20 @@ const files = (state = defaultState, action) => {
         editorEntry: null,
         editorFileData: null,
       };
+    case SHOW_PERMISSION_ERROR_EDITOR:
+      return {
+        ...state,
+        permissionError: action.permissionError,
+      };
+    case CLOSE_PERMISSION_ERROR_EDITOR:
+      return {
+        ...state,
+        permissionError: null,
+      };
     default:
+      return {
+        ...state,
+      };
       return state;
   }
 };

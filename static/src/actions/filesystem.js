@@ -1,5 +1,5 @@
 import * as filesize from 'filesize';
-import {openEditor} from '../actions/files.js';
+import {openEditor, editorShowPermissionError} from '../actions/files.js';
 
 export const START_OPEN = 'START_OPEN';
 export const OPEN_ENTRIES = 'OPEN_ENTRIES';
@@ -163,18 +163,36 @@ export const writeFile = (entry, data) => (dispatch, getState) => {
 
 export const saveAs = (data) => (dispatch, getState) => {
   return async function(data) {
-    const handle = await window.chooseFileSystemEntries({type: 'saveFile'});
+    let handle;
+    try {
+      handle = await window.chooseFileSystemEntries({type: 'saveFile'});
+    } catch (e) {
+      console.log('The user canceled the action. All is well.');
+      return null;
+    }
     await openHandles([handle])(dispatch, getState);
 
     const entry = await writeDataToFile({handle}, data, dispatch, getState);
-    return openEditor(entry)(dispatch);
+    if (entry) {
+      return openEditor(entry)(dispatch);
+    }
+    return null;
   }(data);
 };
 
 async function writeDataToFile(entry, data, dispatch, getState) {
   const handle = entry.handle;
   if (handle.isFile) {
-    const writer = await handle.createWriter();
+    let writer;
+    try {
+      // May error, due to a permission prompt decline or block.
+      writer = await handle.createWriter();
+    } catch (e) {
+      const permissionStatus = await handle.queryPermission({writable: true});
+      editorShowPermissionError(e.message, permissionStatus, dispatch);
+      console.log('error');
+      return null;
+    }
     await writer.truncate(0);
     await writer.write(0, new Blob([data]));
     if (writer.close) {
