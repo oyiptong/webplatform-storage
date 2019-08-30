@@ -1,3 +1,5 @@
+import {html} from 'lit-element';
+
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
 export const SHOW_ERROR_PROMPT = 'SHOW_ERROR_PROMPT';
@@ -71,7 +73,14 @@ export const showErrorPrompt = (errorType,
     case FEATURE_NOT_ENABLED_ERROR:
       title = 'Feature Not Enabled';
       explanation = 'The Native File System API is not enabled.';
-      nextSteps = 'Please go to chrome://flags and enable the feature.';
+      nextSteps = html`
+       <span>
+       Please go to <a href="chrome://flags">chrome://flags</a> and enable the flags:
+       <ul>
+         <li>Experimental Web Platform Features</li>
+         <li>Native File System API</li>
+       </ul>
+       </span>`;
       break;
     default:
       console.log('Unknown error being prompted.');
