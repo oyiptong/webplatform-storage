@@ -3,6 +3,9 @@ service: chrome-storage
 
 instance_class: F1
 
+env_variables:
+    ORIGIN_TRIAL_TOKEN: AsqhMZ6McCd//a92XM6NC9zfHzkJaNenScSAvNWGjgUvawDTOr0aQVpsve/tOIHMHeM0mJOg41dYTlVjhfidWAEAAAB4eyJvcmlnaW4iOiJodHRwczovL2Nocm9tZS1zdG9yYWdlLWRvdC1veWlwdG9uZy1jaHJvbWUuYXBwc3BvdC5jb206NDQzIiwiZmVhdHVyZSI6Ik5hdGl2ZUZpbGVTeXN0ZW0iLCJleHBpcnkiOjE1NzIzMjYyMDZ9
+
 handlers:
         - url: /.*
           script: auto

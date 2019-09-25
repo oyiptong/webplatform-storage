@@ -17,8 +17,9 @@ const (
 )
 
 type serverConfig struct {
-	Port int
-	Env  string
+	Port             int
+	Env              string
+	OriginTrialToken string
 }
 
 var config = serverConfig{
@@ -42,11 +43,29 @@ func init() {
 	if env == "production" {
 		config.Env = env
 	}
+
+	otToken := os.Getenv("ORIGIN_TRIAL_TOKEN")
+	if otToken != "" {
+		config.OriginTrialToken = otToken
+	}
+}
+
+func originTrialMiddlewareMaker(token string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Add("Origin-Trial", token)
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 func main() {
 
 	r := mux.NewRouter()
+
+	if config.OriginTrialToken != "" {
+		r.Use(originTrialMiddlewareMaker(config.OriginTrialToken))
+	}
 
 	if config.Env == "dev" {
 		staticFS := http.FileServer(http.Dir("./static/dist"))
