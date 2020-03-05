@@ -3,6 +3,7 @@ import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
 import {closeEditor} from '../actions/files.js';
 import {writeFile, saveAs} from '../actions/filesystem.js';
+import {closeErrorPrompt} from '../actions/app.js';
 
 class FileEditor extends connect(store)(LitElement) {
   static get styles() {
@@ -75,7 +76,7 @@ class FileEditor extends connect(store)(LitElement) {
   }
 
   closeErrorPrompt() {
-    store.dispatch(editorCloseErrorPrompt);
+    store.dispatch(closeErrorPrompt);
   }
 
   captureChange(e) {

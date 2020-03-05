@@ -190,17 +190,16 @@ async function writeDataToFile(entry, data, dispatch, getState) {
     let writer;
     try {
       // May error, due to a permission prompt decline or block.
-      writer = await handle.createWriter();
+      writer = await handle.createWriter({keepExistingData: false});
     } catch (e) {
       const permissionStatus = await handle.queryPermission({writable: true});
       if (permissionStatus == 'denied') {
         showErrorPrompt(WRITE_PERMISSION_ERROR, e.message, dispatch);
       } else {
-        editorShowErrorPrompt('', e.message, dispatch);
+        showErrorPrompt('', e.message, dispatch);
       }
       return null;
     }
-    await writer.truncate(0);
     await writer.write(0, new Blob([data]));
     if (writer.close) {
       await writer.close();
