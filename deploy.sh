@@ -4,4 +4,4 @@ set -x
 cd static
 npm run dist
 cd ..
-gcloud app deploy
+gcloud app deploy $1

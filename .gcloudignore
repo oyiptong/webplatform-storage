@@ -24,5 +24,7 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 static/node_modules/**
+static/dist/node_modules/**
+static/dist/dist/**
 
 test/**
