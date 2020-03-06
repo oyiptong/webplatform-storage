@@ -2,7 +2,7 @@ import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
 import {openEditor} from '../actions/files.js';
-import {openHandles, closeAllHandles} from '../actions/filesystem.js';
+import {openHandles, closeAllHandles, loadPersistedEntries} from '../actions/filesystem.js';
 import '../components/file-list.js';
 
 class FileExplorer extends connect(store)(LitElement) {
@@ -56,6 +56,10 @@ class FileExplorer extends connect(store)(LitElement) {
       }
       `
     ];
+  }
+
+  firstUpdated() {
+    store.dispatch(loadPersistedEntries);
   }
 
   openFilepicker(options) {

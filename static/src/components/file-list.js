@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
-import {openViewer, openEditor} from '../actions/files.js';
+import {openViewer, openEditor, persistEntry} from '../actions/files.js';
 import {openHandles} from '../actions/filesystem.js';
 
 class FileList extends connect(store)(LitElement) {
@@ -77,6 +77,18 @@ class FileList extends connect(store)(LitElement) {
     };
   }
 
+  triggerPersist(entry) {
+    return (e) => {
+      store.dispatch(persistEntry(store.getState(), entry));
+    };
+  }
+
+  triggerReadPermission(entry) {
+    return (e) => {
+      entry.handle.requestPermission();
+    };
+  }
+
   stateChanged(state) {
     this.entries = state.filesystem.entries;
     this.lastChange = state.filesystem.lastChange;
@@ -110,6 +122,10 @@ class FileList extends connect(store)(LitElement) {
       actions.push(html`<button @click="${this.triggerEdit(entry)}">
                           Edit</button>`);
     }
+    actions.push(html`<button @click="${this.triggerPersist(entry)}">
+                         Persist</button>`);
+    actions.push(html`<button @click="${this.triggerReadPermission(entry)}">
+                         Request read access</button>`);
     return html`
             <tr>
               <td ?directory="${!entry.file}">${entry.name}</td>

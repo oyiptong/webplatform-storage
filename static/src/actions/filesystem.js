@@ -226,3 +226,13 @@ export const closeAllHandles = (dispatch) => {
     type: CLOSE_ALL_HANDLES
   });
 };
+
+export const loadPersistedEntries = async (dispatch, getState) => {
+  const state = getState();
+  const entries = await state.app.db.entries.toArray();
+  dispatch({
+    type: OPEN_ENTRIES,
+    entries,
+    lastChange: Math.floor(Date.now() / 1000),
+  });
+};
