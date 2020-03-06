@@ -136,7 +136,7 @@ class FileList extends connect(store)(LitElement) {
                          Request write access</button>`);
     return html`
             <tr>
-              <td ?directory="${!entry.file}">${entry.name}</td>
+              <td ?directory="${entry.handle.isDirectory}">${entry.name}</td>
               <td>${entry.size}</td>
               <td>${entry.type}</td>
               <td>${actions}</td>
