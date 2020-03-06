@@ -89,6 +89,12 @@ class FileList extends connect(store)(LitElement) {
     };
   }
 
+  triggerWritePermission(entry) {
+    return (e) => {
+      entry.handle.requestPermission({writable: true});
+    };
+  }
+
   stateChanged(state) {
     this.entries = state.filesystem.entries;
     this.lastChange = state.filesystem.lastChange;
@@ -126,6 +132,8 @@ class FileList extends connect(store)(LitElement) {
                          Persist</button>`);
     actions.push(html`<button @click="${this.triggerReadPermission(entry)}">
                          Request read access</button>`);
+    actions.push(html`<button @click="${this.triggerWritePermission(entry)}">
+                         Request write access</button>`);
     return html`
             <tr>
               <td ?directory="${!entry.file}">${entry.name}</td>
