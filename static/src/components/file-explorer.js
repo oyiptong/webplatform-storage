@@ -99,10 +99,10 @@ class FileExplorer extends connect(store)(LitElement) {
       <div class="row">
           <button @click="${this.newFile}" class="new-file">New File</button>
           <button @click="${this.openFilepicker(
-      {type: 'openDirectory', multiple: true})}"
+      {type: 'open-directory', multiple: true})}"
                   class="directory">Open Directory</button>
           <button @click="${this.openFilepicker(
-      {type: 'openFile', multiple: true})}"
+      {type: 'open-file', multiple: true})}"
                   class="files">Open Files</button>
           <button @click="${this.closeAllHandles}"
                   ?hidden="${!this.showCloseButton}"
