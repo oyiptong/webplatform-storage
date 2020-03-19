@@ -169,7 +169,7 @@ export const saveAs = (data) => (dispatch, getState) => {
   return async function(data) {
     let handle;
     try {
-      handle = await window.chooseFileSystemEntries({type: 'saveFile'});
+      handle = await window.chooseFileSystemEntries({type: 'save-file'});
     } catch (e) {
       console.log('The user canceled the action. All is well.');
       return null;
