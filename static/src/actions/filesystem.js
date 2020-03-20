@@ -190,7 +190,7 @@ async function writeDataToFile(entry, data, dispatch, getState) {
     let writer;
     try {
       // May error, due to a permission prompt decline or block.
-      writer = await handle.createWriter({keepExistingData: false});
+      writer = await handle.createWritable({keepExistingData: false});
     } catch (e) {
       const permissionStatus = await handle.queryPermission({writable: true});
       if (permissionStatus == 'denied') {
@@ -200,10 +200,8 @@ async function writeDataToFile(entry, data, dispatch, getState) {
       }
       return null;
     }
-    await writer.write(0, new Blob([data]));
-    if (writer.close) {
-      await writer.close();
-    }
+    await writer.write(new Blob([data]));
+    await writer.close();
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
 
