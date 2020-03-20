@@ -1,0 +1,12 @@
+runtime: go112
+service: chrome-storage
+
+instance_class: F1
+
+env_variables:
+    ORIGIN_TRIAL_TOKEN: AqLXv28PTufWVVOg8QlU5lIZLDknDMN2MOcS8+n01PRJeY3UdD8qYGiteBsH696X5I9ITJbIhvRGU0H2xbUOmwAAAAB4eyJvcmlnaW4iOiJodHRwczovL2Nocm9tZS1zdG9yYWdlLWRvdC1veWlwdG9uZy1jaHJvbWUuYXBwc3BvdC5jb206NDQzIiwiZmVhdHVyZSI6Ik5hdGl2ZUZpbGVTeXN0ZW0iLCJleHBpcnkiOjE1ODY5OTY2NjF9
+handlers:
+        - url: /.*
+          script: auto
+          secure: always
+          redirect_http_response_code: 301
