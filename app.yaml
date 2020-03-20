@@ -1,10 +1,10 @@
 runtime: go112
-service: chrome-storage
+service: chrome-storage-dev
 
 instance_class: F1
 
 env_variables:
-    ORIGIN_TRIAL_TOKEN: AqLXv28PTufWVVOg8QlU5lIZLDknDMN2MOcS8+n01PRJeY3UdD8qYGiteBsH696X5I9ITJbIhvRGU0H2xbUOmwAAAAB4eyJvcmlnaW4iOiJodHRwczovL2Nocm9tZS1zdG9yYWdlLWRvdC1veWlwdG9uZy1jaHJvbWUuYXBwc3BvdC5jb206NDQzIiwiZmVhdHVyZSI6Ik5hdGl2ZUZpbGVTeXN0ZW0iLCJleHBpcnkiOjE1ODY5OTY2NjF9
+    ORIGIN_TRIAL_TOKEN: AnYoFgLduOkDSyMsygpD9BWgPfRP+WB3XF3p7R9yzPP3deCTWmx/93tZqSW/6PCbHjb0Z2sllfDGSWFdNm9hawkAAAB8eyJvcmlnaW4iOiJodHRwczovL2Nocm9tZS1zdG9yYWdlLWRldi1kb3Qtb3lpcHRvbmctY2hyb21lLmFwcHNwb3QuY29tOjQ0MyIsImZlYXR1cmUiOiJOYXRpdmVGaWxlU3lzdGVtIiwiZXhwaXJ5IjoxNTg2OTk2NzA2fQ==
 handlers:
         - url: /.*
           script: auto
