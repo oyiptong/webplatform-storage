@@ -68,9 +68,15 @@ class FeatureStatus extends connect(store)(LitElement) {
         status: 'Loading...',
         available: null,
         enabled: true,
+      },
+      filehandling: {
+        label: 'File Type Handling',
+        status: 'Loading...',
+        available: null,
+        enabled: true,
       }
     };
-    this.wantList = ['nativefs', 'indexeddb'];
+    this.wantList = ['nativefs', 'indexeddb', 'filehandling'];
     this.debug = false;
   }
 

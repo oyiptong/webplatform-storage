@@ -2,6 +2,7 @@ import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
 import {openViewer, openEditor} from '../actions/files.js';
+import {openHandles} from '../actions/filesystem.js';
 
 class FileList extends connect(store)(LitElement) {
   static get styles() {
@@ -125,3 +126,14 @@ class FileList extends connect(store)(LitElement) {
 }
 
 window.customElements.define('file-list', FileList);
+window.addEventListener('load', async () => {
+  if ('launchQueue' in window) {
+    launchQueue.setConsumer((launchParams) => {
+      if (!launchParams.files.length) {
+        return;
+      }
+
+      store.dispatch(openHandles(launchParams.files));
+    });
+  }
+});
