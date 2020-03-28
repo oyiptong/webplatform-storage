@@ -1,21 +1,34 @@
 {
   "manifest_version": 2,
-  "description": "Native FS Demo",
-  "short_name": "native_fs_demo",
+  "description": "Native FS Demo Editor",
+  "name": "Native FS Editor",
+  "short_name": "nativefs_ed",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "grey",
   "icons": [
     {
-      "src": "/logo-folder.png",
-      "sizes": "100x100",
+      "src": "/icon_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon_512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "file_handlers": [
     {
-      "name": "Text File",
-      "action": "/open-text",
+      "action": ".",
       "accept": {
-        "text/csv": [".csv"],
-        "text/plain": [".txt", ".md", ".info"]
+        "text/csv": [".csv"]
+      }
+    },
+    {
+      "action": ".",
+      "accept": {
+        "text/plain": [".txt", ".md", ".info", ".log"]
       }
     }
   ]
