@@ -1,5 +1,5 @@
 {
-  "manifest_version": 1,
+  "manifest_version": 2,
   "description": "Native FS Demo",
   "short_name": "native_fs_demo",
   "icons": [
@@ -7,6 +7,16 @@
       "src": "/logo-folder.png",
       "sizes": "100x100",
       "type": "image/png"
+    }
+  ],
+  "file_handlers": [
+    {
+      "name": "Text File",
+      "action": "/open-text",
+      "accept": {
+        "text/csv": [".csv"],
+        "text/plain": [".txt", ".md", ".info"]
+      }
     }
   ]
 }

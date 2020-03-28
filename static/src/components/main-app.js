@@ -47,7 +47,7 @@ class MainApp extends connect(store)(LitElement) {
 
   constructor() {
     super();
-    this.featureWantList = ['nativefs', 'indexeddb'];
+    this.featureWantList = ['nativefs', 'indexeddb', 'filehandling'];
   }
 
   stateChanged(state) {

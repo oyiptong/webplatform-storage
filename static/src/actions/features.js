@@ -15,17 +15,24 @@ function verifyPlatformCapabilities(featureList) {
       case 'nativefs':
         capabilities['nativefs'] = detectNativeFS();
         break;
+      case 'filehandling':
+        capabilities['filehandling'] = detectFileHandling();
+        break;
     }
   }
   return capabilities;
 }
 
 function detectIndexedDB() {
-  return !!window.indexedDB;
+  return 'indexedDB' in window;
 }
 
 function detectNativeFS() {
-  return !!window.chooseFileSystemEntries;
+  return 'chooseFileSystemEntries' in window;
+}
+
+function detectFileHandling() {
+  return 'launchQueue' in window;
 }
 
 export const checkCapabilities = (featureList) => (dispatch) => {

@@ -7,7 +7,7 @@ import {
 
 const defaultState = {
   page: 'home',
-  featuresEnabled: new Set(['nativefs']),
+  featuresEnabled: new Set(['nativefs', 'indexeddb', 'filehandling']),
   debug: window.localStorage.getItem('debug') ? true : false,
   errorToPrompt: null,
 };
