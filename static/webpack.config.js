@@ -15,6 +15,10 @@ module.exports = ({mode}) => {
           to: 'webcomponents'
         },
         {
+          from: 'sw.js',
+          to: '.'
+        },
+        {
           from: '**/*.css',
           to: '.'
         },
