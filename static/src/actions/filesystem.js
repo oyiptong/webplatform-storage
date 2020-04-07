@@ -234,3 +234,34 @@ export const loadPersistedEntries = async (dispatch, getState) => {
     lastChange: Math.floor(Date.now() / 1000),
   });
 };
+
+export const persistEntry = (entry) => (dispatch, getState) => {
+  return async function(entry, dispatch) {
+    let result = await getState().app.db.entries.add({
+      name: entry.name,
+      type: entry.type,
+      size: entry.size,
+      handle: entry.handle
+    });
+    entry.id = result;
+    dispatch({
+      type: ENTRY_CHANGED,
+      // Make a copy so redux knows the state has changed.
+      entries: getState().filesystem.entries.concat(),
+      lastChange: Math.floor(Date.now() / 1000),
+    });
+  }(entry, dispatch);
+};
+
+export const unpersistEntry = (entry) => (dispatch, getState) => {
+  return async function( entry, dispatch) {
+    let result = await getState().app.db.entries.delete(entry.id);
+    delete entry.id;
+    dispatch({
+      type: ENTRY_CHANGED,
+      // Make a copy so redux knows the state has changed.
+      entries: getState().filesystem.entries.concat(),
+      lastChange: Math.floor(Date.now() / 1000),
+    });
+  }(entry, dispatch);
+};

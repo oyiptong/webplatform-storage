@@ -57,15 +57,3 @@ export const closeEditor = (dispatch) => {
     type: CLOSE_EDITOR,
   });
 };
-
-export const persistEntry = (state, entry) => (dispatch) => {
-  return async function(state, entry, dispatch) {
-    console.log('Persisting', entry, state);
-    state.app.db.entries.add({
-      name: entry.name,
-      type: entry.type,
-      size: entry.size,
-      handle: entry.handle
-    });
-  }(state, entry, dispatch);
-};

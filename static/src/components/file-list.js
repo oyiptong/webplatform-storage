@@ -1,8 +1,8 @@
 import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
-import {openViewer, openEditor, persistEntry} from '../actions/files.js';
-import {openHandles} from '../actions/filesystem.js';
+import {openViewer, openEditor} from '../actions/files.js';
+import {openHandles, persistEntry, unpersistEntry} from '../actions/filesystem.js';
 
 class FileList extends connect(store)(LitElement) {
   static get styles() {
@@ -79,7 +79,13 @@ class FileList extends connect(store)(LitElement) {
 
   triggerPersist(entry) {
     return (e) => {
-      store.dispatch(persistEntry(store.getState(), entry));
+      store.dispatch(persistEntry(entry));
+    };
+  }
+
+  triggerUnpersist(entry) {
+    return (e) => {
+      store.dispatch(unpersistEntry(entry));
     };
   }
 
@@ -128,8 +134,13 @@ class FileList extends connect(store)(LitElement) {
       actions.push(html`<button @click="${this.triggerEdit(entry)}">
                           Edit</button>`);
     }
-    actions.push(html`<button @click="${this.triggerPersist(entry)}">
-                         Persist</button>`);
+    if (!('id' in entry)) {
+      actions.push(html`<button @click="${this.triggerPersist(entry)}">
+                           Persist</button>`);
+    } else {
+      actions.push(html`<button @click="${this.triggerUnpersist(entry)}">
+                           Unpersist</button>`);
+    }
     actions.push(html`<button @click="${this.triggerReadPermission(entry)}">
                          Request read access</button>`);
     actions.push(html`<button @click="${this.triggerWritePermission(entry)}">
