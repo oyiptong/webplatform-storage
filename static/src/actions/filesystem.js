@@ -190,9 +190,14 @@ async function writeDataToFile(entry, data, dispatch, getState) {
   const handle = entry.handle;
   if (handle.isFile) {
     let writer;
+    const useOldWriteAPI = 'createWriter' in handle;
     try {
       // May error, due to a permission prompt decline or block.
-      writer = await handle.createWritable({keepExistingData: false});
+      if (useOldWriteAPI) {
+        writer = await handle.createWriter({keepExistingData: false});
+      } else {
+        writer = await handle.createWritable({keepExistingData: false});
+      }
     } catch (e) {
       const permissionStatus = await handle.queryPermission({writable: true});
       if (permissionStatus == 'denied') {
@@ -202,7 +207,11 @@ async function writeDataToFile(entry, data, dispatch, getState) {
       }
       return null;
     }
-    await writer.write(new Blob([data]));
+    if (useOldWriteAPI) {
+      await writer.write(0, new Blob([data]));
+    } else {
+      await writer.write(new Blob([data]));
+    }
     await writer.close();
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
