@@ -2,7 +2,7 @@ import {LitElement, html, css} from 'lit-element';
 import {connect} from 'pwa-helpers/connect-mixin.js';
 import {store} from '../store.js';
 import {openViewer, openEditor} from '../actions/files.js';
-import {openHandles} from '../actions/filesystem.js';
+import {openHandles, persistEntry, unpersistEntry, refreshPermissionStatus} from '../actions/filesystem.js';
 
 class FileList extends connect(store)(LitElement) {
   static get styles() {
@@ -77,6 +77,32 @@ class FileList extends connect(store)(LitElement) {
     };
   }
 
+  triggerPersist(entry) {
+    return (e) => {
+      store.dispatch(persistEntry(entry));
+    };
+  }
+
+  triggerUnpersist(entry) {
+    return (e) => {
+      store.dispatch(unpersistEntry(entry));
+    };
+  }
+
+  triggerReadPermission(entry) {
+    return async (e) => {
+      await entry.handle.requestPermission();
+      store.dispatch(refreshPermissionStatus);
+    };
+  }
+
+  triggerWritePermission(entry) {
+    return async (e) => {
+      await entry.handle.requestPermission({writable: true});
+      store.dispatch(refreshPermissionStatus);
+    };
+  }
+
   stateChanged(state) {
     this.entries = state.filesystem.entries;
     this.lastChange = state.filesystem.lastChange;
@@ -110,9 +136,25 @@ class FileList extends connect(store)(LitElement) {
       actions.push(html`<button @click="${this.triggerEdit(entry)}">
                           Edit</button>`);
     }
+    if (!('id' in entry)) {
+      actions.push(html`<button @click="${this.triggerPersist(entry)}">
+                           Persist</button>`);
+    } else {
+      actions.push(html`<button @click="${this.triggerUnpersist(entry)}">
+                           Unpersist</button>`);
+    }
+    if (!entry.isReadable) {
+      actions.push(html`<button @click="${this.triggerReadPermission(entry)}">
+                           Request read access</button>`);
+    }
+    if (!entry.isWritable) {
+      actions.push(html`<button @click="${this.triggerWritePermission(entry)}">
+                           Request write access</button>`);
+    }
+
     return html`
             <tr>
-              <td ?directory="${!entry.file}">${entry.name}</td>
+              <td ?directory="${entry.handle.isDirectory}">${entry.name}</td>
               <td>${entry.size}</td>
               <td>${entry.type}</td>
               <td>${actions}</td>

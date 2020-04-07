@@ -110,6 +110,8 @@ async function asyncEntriesFromHandle(handle,
     entry.size = `${itemCount} items`;
   }
   entry.name = handle.isFile ? handle.name : handle.name + '/';
+  entry.isReadable = await handle.queryPermission({writable: false}) == 'granted';
+  entry.isWritable = await handle.queryPermission({writable: true}) == 'granted';
 
   const entries = getState()
       .filesystem
@@ -188,9 +190,14 @@ async function writeDataToFile(entry, data, dispatch, getState) {
   const handle = entry.handle;
   if (handle.isFile) {
     let writer;
+    const useOldWriteAPI = 'createWriter' in handle;
     try {
       // May error, due to a permission prompt decline or block.
-      writer = await handle.createWriter({keepExistingData: false});
+      if (useOldWriteAPI) {
+        writer = await handle.createWriter({keepExistingData: false});
+      } else {
+        writer = await handle.createWritable({keepExistingData: false});
+      }
     } catch (e) {
       const permissionStatus = await handle.queryPermission({writable: true});
       if (permissionStatus == 'denied') {
@@ -200,12 +207,16 @@ async function writeDataToFile(entry, data, dispatch, getState) {
       }
       return null;
     }
-    await writer.write(0, new Blob([data]));
-    if (writer.close) {
-      await writer.close();
+    if (useOldWriteAPI) {
+      await writer.write(0, new Blob([data]));
+    } else {
+      await writer.write(new Blob([data]));
     }
+    await writer.close();
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
 
     if (entry) {
       dispatch({
@@ -224,5 +235,64 @@ async function writeDataToFile(entry, data, dispatch, getState) {
 export const closeAllHandles = (dispatch) => {
   dispatch({
     type: CLOSE_ALL_HANDLES
+  });
+};
+
+export const loadPersistedEntries = async (dispatch, getState) => {
+  const state = getState();
+  const entries = await state.app.db.entries.toArray();
+  for (const entry of entries) {
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+  }
+  dispatch({
+    type: OPEN_ENTRIES,
+    entries,
+    lastChange: Math.floor(Date.now() / 1000),
+  });
+};
+
+export const persistEntry = (entry) => (dispatch, getState) => {
+  return async function(entry, dispatch) {
+    let result = await getState().app.db.entries.add({
+      name: entry.name,
+      type: entry.type,
+      size: entry.size,
+      handle: entry.handle
+    });
+    entry.id = result;
+    dispatch({
+      type: ENTRY_CHANGED,
+      // Make a copy so redux knows the state has changed.
+      entries: getState().filesystem.entries.concat(),
+      lastChange: Math.floor(Date.now() / 1000),
+    });
+  }(entry, dispatch);
+};
+
+export const unpersistEntry = (entry) => (dispatch, getState) => {
+  return async function(entry, dispatch) {
+    let result = await getState().app.db.entries.delete(entry.id);
+    delete entry.id;
+    dispatch({
+      type: ENTRY_CHANGED,
+      // Make a copy so redux knows the state has changed.
+      entries: getState().filesystem.entries.concat(),
+      lastChange: Math.floor(Date.now() / 1000),
+    });
+  }(entry, dispatch);
+};
+
+export const refreshPermissionStatus = async (dispatch, getState) => {
+  const entries = getState().filesystem.entries;
+  for (const entry of entries) {
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+  }
+  dispatch({
+    type: ENTRY_CHANGED,
+    // Make a copy so redux knows the state has changed.
+    entries: getState().filesystem.entries.concat(),
+    lastChange: Math.floor(Date.now() / 1000),
   });
 };

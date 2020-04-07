@@ -5,11 +5,19 @@ import {
   CLOSE_ERROR_PROMPT,
 } from '../actions/app.js';
 
+import Dexie from 'dexie';
+
+const db = new Dexie('entrydb');
+db.version(1).stores({
+  entries: '++id, name, type, size, handle'
+});
+
 const defaultState = {
   page: 'home',
   featuresEnabled: new Set(['nativefs', 'indexeddb', 'filehandling']),
   debug: window.localStorage.getItem('debug') ? true : false,
   errorToPrompt: null,
+  db: db,
 };
 
 const app = (state = defaultState, action) => {
