@@ -110,6 +110,8 @@ async function asyncEntriesFromHandle(handle,
     entry.size = `${itemCount} items`;
   }
   entry.name = handle.isFile ? handle.name : handle.name + '/';
+  entry.isReadable = await handle.queryPermission({writable: false}) == 'granted';
+  entry.isWritable = await handle.queryPermission({writable: true}) == 'granted';
 
   const entries = getState()
       .filesystem
@@ -204,6 +206,8 @@ async function writeDataToFile(entry, data, dispatch, getState) {
     await writer.close();
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
 
     if (entry) {
       dispatch({
@@ -228,6 +232,10 @@ export const closeAllHandles = (dispatch) => {
 export const loadPersistedEntries = async (dispatch, getState) => {
   const state = getState();
   const entries = await state.app.db.entries.toArray();
+  for (const entry of entries) {
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+  }
   dispatch({
     type: OPEN_ENTRIES,
     entries,
@@ -254,7 +262,7 @@ export const persistEntry = (entry) => (dispatch, getState) => {
 };
 
 export const unpersistEntry = (entry) => (dispatch, getState) => {
-  return async function( entry, dispatch) {
+  return async function(entry, dispatch) {
     let result = await getState().app.db.entries.delete(entry.id);
     delete entry.id;
     dispatch({
@@ -264,4 +272,18 @@ export const unpersistEntry = (entry) => (dispatch, getState) => {
       lastChange: Math.floor(Date.now() / 1000),
     });
   }(entry, dispatch);
+};
+
+export const refreshPermissionStatus = async (dispatch, getState) => {
+  const entries = getState().filesystem.entries;
+  for (const entry of entries) {
+    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+  }
+  dispatch({
+    type: ENTRY_CHANGED,
+    // Make a copy so redux knows the state has changed.
+    entries: getState().filesystem.entries.concat(),
+    lastChange: Math.floor(Date.now() / 1000),
+  });
 };
