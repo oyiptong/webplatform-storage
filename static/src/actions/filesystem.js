@@ -95,13 +95,14 @@ async function asyncEntriesFromHandle(handle,
     parent,
     level,
   };
-  if (handle.isFile) {
+  const isFile = handle.isFile || handle.kind == 'file';
+  if (isFile) {
     const file = await handle.getFile();
     entry.file = file;
     entry.type = deduceType(file);
     entry.size = filesize(file.size, {standard: 'iec'});
   } else {
-    const subHandlesIter = await handle.getEntries();
+    const subHandlesIter = 'getEntries' in handle ? handle.getEntries() : handle;
     let itemCount = 0;
     for await (const subHandle of subHandlesIter) {
       itemCount++;
@@ -109,9 +110,9 @@ async function asyncEntriesFromHandle(handle,
     }
     entry.size = `${itemCount} items`;
   }
-  entry.name = handle.isFile ? handle.name : handle.name + '/';
-  entry.isReadable = await handle.queryPermission({writable: false}) == 'granted';
-  entry.isWritable = await handle.queryPermission({writable: true}) == 'granted';
+  entry.name = isFile ? handle.name : handle.name + '/';
+  entry.isReadable = await handle.queryPermission({writable: false, mode: 'read'}) == 'granted';
+  entry.isWritable = await handle.queryPermission({writable: true, mode: 'readwrite'}) == 'granted';
 
   const entries = getState()
       .filesystem
@@ -171,7 +172,11 @@ export const saveAs = (data) => (dispatch, getState) => {
   return async function(data) {
     let handle;
     try {
-      handle = await window.chooseFileSystemEntries({type: 'save-file'});
+      if ('showSaveFilePicker' in window) {
+        handle = await window.showSaveFilePicker();
+      } else {
+        handle = await window.chooseFileSystemEntries({type: 'save-file'});
+      }
     } catch (e) {
       console.log('The user canceled the action. All is well.');
       return null;
@@ -199,7 +204,7 @@ async function writeDataToFile(entry, data, dispatch, getState) {
         writer = await handle.createWritable({keepExistingData: false});
       }
     } catch (e) {
-      const permissionStatus = await handle.queryPermission({writable: true});
+      const permissionStatus = await handle.queryPermission({writable: true, mode: 'readwrite'});
       if (permissionStatus == 'denied') {
         showErrorPrompt(WRITE_PERMISSION_ERROR, e.message, dispatch);
       } else {
@@ -215,8 +220,8 @@ async function writeDataToFile(entry, data, dispatch, getState) {
     await writer.close();
     entry.file = await handle.getFile();
     entry.size = filesize(entry.file.size, {standard: 'iec'});
-    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
-    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+    entry.isReadable = await entry.handle.queryPermission({writable: false, mode: 'read'}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true, mode: 'readwrite'}) == 'granted';
 
     if (entry) {
       dispatch({
@@ -242,8 +247,8 @@ export const loadPersistedEntries = async (dispatch, getState) => {
   const state = getState();
   const entries = await state.app.db.entries.toArray();
   for (const entry of entries) {
-    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
-    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+    entry.isReadable = await entry.handle.queryPermission({writable: false, mode: 'read'}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true, mode: 'readwrite'}) == 'granted';
   }
   dispatch({
     type: OPEN_ENTRIES,
@@ -286,8 +291,8 @@ export const unpersistEntry = (entry) => (dispatch, getState) => {
 export const refreshPermissionStatus = async (dispatch, getState) => {
   const entries = getState().filesystem.entries;
   for (const entry of entries) {
-    entry.isReadable = await entry.handle.queryPermission({writable: false}) == 'granted';
-    entry.isWritable = await entry.handle.queryPermission({writable: true}) == 'granted';
+    entry.isReadable = await entry.handle.queryPermission({writable: false, mode: 'read'}) == 'granted';
+    entry.isWritable = await entry.handle.queryPermission({writable: true, mode: 'readwrite'}) == 'granted';
   }
   dispatch({
     type: ENTRY_CHANGED,

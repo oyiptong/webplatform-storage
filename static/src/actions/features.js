@@ -28,7 +28,7 @@ function detectIndexedDB() {
 }
 
 function detectNativeFS() {
-  return 'chooseFileSystemEntries' in window;
+  return 'chooseFileSystemEntries' in window || 'showOpenFilePicker' in window;
 }
 
 function detectFileHandling() {
@@ -40,7 +40,7 @@ export const checkCapabilities = (featureList) => (dispatch) => {
   if (!capabilities['nativefs']) {
     showErrorPrompt(
         FEATURE_NOT_ENABLED_ERROR,
-        'window.chooseFileSystemEntries is undefined.',
+        'window.showOpenFilePicker is undefined.',
         dispatch);
   }
   dispatch({
