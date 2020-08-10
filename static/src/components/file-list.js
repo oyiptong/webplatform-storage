@@ -154,7 +154,7 @@ class FileList extends connect(store)(LitElement) {
 
     return html`
             <tr>
-              <td ?directory="${entry.handle.isDirectory}">${entry.name}</td>
+              <td ?directory="${entry.type == 'directory'}">${entry.name}</td>
               <td>${entry.size}</td>
               <td>${entry.type}</td>
               <td>${actions}</td>

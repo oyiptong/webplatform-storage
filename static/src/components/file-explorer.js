@@ -62,10 +62,31 @@ class FileExplorer extends connect(store)(LitElement) {
     store.dispatch(loadPersistedEntries);
   }
 
-  openFilepicker(options) {
+  openFilePicker() {
     return async function(e) {
       try {
-        const handles = await window.chooseFileSystemEntries(options);
+        let handles;
+        if ('showOpenFilePicker' in window) {
+            handles = await window.showOpenFilePicker({multiple: true});
+        } else {
+            handles = await window.chooseFileSystemEntries({type: 'open-file', multiple: true});
+        }
+        store.dispatch(openHandles(handles));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  }
+
+  openDirectoryPicker() {
+    return async function(e) {
+      try {
+        let handles;
+        if ('showDirectoryPicker' in window) {
+            handles = [await window.showDirectoryPicker()];
+        } else {
+            handles = await window.chooseFileSystemEntries({type: 'open-directory', multiple: true});
+        }
         store.dispatch(openHandles(handles));
       } catch (e) {
         console.log(e);
@@ -102,11 +123,9 @@ class FileExplorer extends connect(store)(LitElement) {
     return html`
       <div class="row">
           <button @click="${this.newFile}" class="new-file">New File</button>
-          <button @click="${this.openFilepicker(
-      {type: 'open-directory', multiple: true})}"
+          <button @click="${this.openDirectoryPicker()}"
                   class="directory">Open Directory</button>
-          <button @click="${this.openFilepicker(
-      {type: 'open-file', multiple: true})}"
+          <button @click="${this.openFilePicker()})}"
                   class="files">Open Files</button>
           <button @click="${this.closeAllHandles}"
                   ?hidden="${!this.showCloseButton}"
