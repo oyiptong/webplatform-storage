@@ -193,7 +193,7 @@ export const saveAs = (data) => (dispatch, getState) => {
 
 async function writeDataToFile(entry, data, dispatch, getState) {
   const handle = entry.handle;
-  if (handle.isFile) {
+  if (handle.isFile || handle.kind == 'file') {
     let writer;
     const useOldWriteAPI = 'createWriter' in handle;
     try {
