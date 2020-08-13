@@ -102,7 +102,7 @@ async function asyncEntriesFromHandle(handle,
     entry.type = deduceType(file);
     entry.size = filesize(file.size, {standard: 'iec'});
   } else {
-    const subHandlesIter = 'getEntries' in handle ? handle.getEntries() : handle;
+    const subHandlesIter = 'values' in handle ? handle.values() : handle.getEntries();
     let itemCount = 0;
     for await (const subHandle of subHandlesIter) {
       itemCount++;
