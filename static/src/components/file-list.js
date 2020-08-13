@@ -98,7 +98,7 @@ class FileList extends connect(store)(LitElement) {
 
   triggerWritePermission(entry) {
     return async (e) => {
-      await entry.handle.requestPermission({writable: true});
+      await entry.handle.requestPermission({writable: true, mode: 'readwrite'});
       store.dispatch(refreshPermissionStatus);
     };
   }
